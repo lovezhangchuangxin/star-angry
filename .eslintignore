@@ -1,0 +1,8 @@
+node_modules
+dist
+pnpm-lock.yaml
+
+docs/**/cache
+# eslint 默认忽略 . 开头的文件
+!.*
+.husky

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES2020",
+    "sourceMap": false,
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "strict": true,
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "rootDir": "."
+  },
+  "exclude": ["node_modules", "dist", "vite.config.ts", "package.json"]
+}
