@@ -6,7 +6,7 @@ Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
 
 项目采用 _pnpm_ 作为包管理工具搭建 Monorepo 仓库。
 
-**项目结构**
+## 项目结构
 
 ```
 .
