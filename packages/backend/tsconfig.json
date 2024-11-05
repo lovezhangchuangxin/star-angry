@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "esnext", // 目标语言版本
+    "module": "commonjs", // 指定生成代码的模板标准
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src", // 指定输出目录, 默认是dist文件夹
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "package.json"]
+}

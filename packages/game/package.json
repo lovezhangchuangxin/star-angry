@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@star-angry/api": "workspace:^",
+    "@star-angry/db": "workspace:^",
+    "@star-angry/shared": "workspace:^",
     "element-plus": "^2.8.7",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"

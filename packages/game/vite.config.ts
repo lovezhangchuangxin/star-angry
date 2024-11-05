@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     ElementPlus({}),
   ],
-  envDir: './env',
+  envDir: '../../env',
   envPrefix: ['STAR_'],
   resolve: {
     alias: {

@@ -14,8 +14,10 @@
     "format": "prettier --write . --cache",
     "lint": "eslint --fix . --cache",
     "lint:staged": "lint-staged",
-    "dev": "pnpm --filter @star-angry/game dev",
-    "build": "pnpm --filter @star-angry/game build"
+    "dev:game": "pnpm --filter @star-angry/game dev",
+    "dev:backend": "pnpm --filter @star-angry/backend dev",
+    "build:game": "pnpm --filter @star-angry/game build",
+    "build:backend": "pnpm --filter @star-angry/backend build"
   },
   "keywords": [
     "star",
@@ -24,8 +26,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@star-angry/api": "workspace:^",
     "axios": "^1.7.7",
-    "pinia": "^2.2.6"
+    "dotenv": "^16.4.5",
+    "pinia": "^2.2.6",
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
