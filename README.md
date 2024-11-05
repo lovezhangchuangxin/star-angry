@@ -12,8 +12,10 @@ Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
 .
 ├── packages
 │   ├── api      # 接口定义
+│   ├── backend  # 游戏后端
+|   ├── db       # 数据库
 │   ├── game     # 游戏前端
-│   └── shared   # 通用方法
+│   └── shared   # 共享方法
 └── README.md
 ```
 
@@ -21,7 +23,8 @@ Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev:backend # 启动后端
+pnpm dev:game    # 启动前端
 ```
 
 ## 提交规范
