@@ -1,6 +1,7 @@
 import { GameDB, Role, UserModel } from '@star-angry/db'
 import jwt from 'jsonwebtoken'
 import { v4 as uuidv4 } from 'uuid'
+import bcrypt from 'bcryptjs'
 import { Result } from '../../utils/result'
 import { ErrorCode } from '../../error/ErrorCode'
 import { GameError } from '../../error/GameError'
@@ -35,6 +36,9 @@ export default class UserService {
       throw new GameError(ErrorCode.USER_EXIST)
     }
 
+    // 密码加密
+    password = bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+
     const userInfo: UserModel = {
       id: uuidv4(),
       username,
@@ -65,7 +69,7 @@ export default class UserService {
   static async login(username: string, password: string) {
     const data = await GameDB.getDB().getData()
     const user = data.user.find((item) => item.username === username)
-    if (!user || user.password !== password) {
+    if (!user || !bcrypt.compareSync(password, user.password)) {
       throw new GameError(ErrorCode.USERNAME_OR_PASSWORD_ERROR)
     }
     const { password: _, ...safeUserInfo } = user
