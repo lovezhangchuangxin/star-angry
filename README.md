@@ -32,7 +32,7 @@ pnpm install
 在根目录下创建 `.env` 文件，内容如下，填写必要内容：
 
 ```env
-GAME_PORT=7777
+GAME_PORT=7788
 JWT_SECRET=
 
 # 邮箱配置
