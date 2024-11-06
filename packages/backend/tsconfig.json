@@ -15,6 +15,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../shared/src/cache.ts"],
   "exclude": ["node_modules", "dist", "package.json"]
 }

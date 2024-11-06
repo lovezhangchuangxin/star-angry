@@ -19,7 +19,7 @@ export default defineConfig({
     ElementPlus({}),
   ],
   envDir: '../../env',
-  envPrefix: ['STAR_'],
+  envPrefix: ['GAME_'],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),

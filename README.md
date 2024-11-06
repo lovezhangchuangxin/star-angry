@@ -21,8 +21,30 @@ Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
 
 ## 项目启动
 
+1. 下载依赖
+
 ```bash
 pnpm install
+```
+
+2. 配置环境变量
+
+在根目录下创建 `.env` 文件，内容如下，填写必要内容：
+
+```env
+GAME_PORT=7777
+JWT_SECRET=
+
+# 邮箱配置
+MAIL_HOST=
+MAIL_PORT=
+MAIL_USERNAME=
+MAIL_PASSWORD=
+```
+
+3. 启动项目
+
+```bash
 pnpm dev:backend # 启动后端
 pnpm dev:game    # 启动前端
 ```

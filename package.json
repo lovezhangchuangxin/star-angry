@@ -27,6 +27,8 @@
   "license": "ISC",
   "dependencies": {
     "@star-angry/api": "workspace:^",
+    "@star-angry/db": "workspace:^",
+    "@star-angry/shared": "workspace:^",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "pinia": "^2.2.6",

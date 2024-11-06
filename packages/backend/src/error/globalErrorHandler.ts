@@ -6,8 +6,6 @@ export const globalErrorHandler = async (ctx: Context, next: Next) => {
   try {
     await next()
   } catch (error) {
-    console.log(444, error)
-
     if (error instanceof GameError) {
       ctx.body = Result.error(error.getCode(), error.getMsg())
       return

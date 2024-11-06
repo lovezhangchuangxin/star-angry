@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app">
     <router-view></router-view>
   </div>
 </template>
@@ -46,4 +46,8 @@ onMounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.app {
+  height: 100vh;
+}
+</style>

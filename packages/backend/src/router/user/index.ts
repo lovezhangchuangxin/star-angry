@@ -7,6 +7,8 @@ userRouter.post('/login/register', UserController.register)
 
 userRouter.post('/login', UserController.login)
 
+userRouter.post('/login/verification', UserController.sendVerification)
+
 userRouter.get('/user/info', UserController.getUserInfo)
 
 export default userRouter

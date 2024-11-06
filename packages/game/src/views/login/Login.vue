@@ -238,7 +238,10 @@ const onSubmit = (formEle?: FormInstance) => {
           return
         }
       } else {
-        const res = await UserApi.register(registerForm)
+        const res = await UserApi.register(
+          registerForm,
+          registerForm.verification,
+        )
         if (res.code === 0) {
           message.success(res.msg)
           setFormType('login')

@@ -3,22 +3,38 @@ import UserService from '../../service/user'
 import { ErrorCode } from '../../error/ErrorCode'
 import { GameError } from '../../error/GameError'
 import { UserModel } from '@star-angry/db'
+import { Validator } from '@star-angry/shared'
 
 export default class UserController {
   /**
    * 注册
    */
   static async register(ctx: Context) {
-    const { username, password } = ctx.request.body as {
-      username?: string
-      password?: string
+    const { user: { username, password, email } = {}, verification } = ctx
+      .request.body as {
+      user?: Partial<UserModel>
+      verification?: string
     }
 
-    if (!username || !password) {
+    if (!username || !password || !email || !verification) {
       throw new GameError(ErrorCode.PARAM_ERROR)
     }
 
-    ctx.body = await UserService.register(username, password)
+    // 检验数据格式
+    if (
+      !Validator.isUsername(username) ||
+      !Validator.isPassword(password) ||
+      !Validator.isEmail(email)
+    ) {
+      throw new GameError(ErrorCode.PARAM_ERROR)
+    }
+
+    ctx.body = await UserService.register(
+      username,
+      password,
+      email,
+      verification,
+    )
   }
 
   /**
@@ -41,12 +57,26 @@ export default class UserController {
    * 获取用户信息
    */
   static async getUserInfo(ctx: Context) {
-    const { username } = ctx.state.user as UserModel
-    console.log('user: ', ctx.state.user)
+    const { username } = (ctx.state.user?.data || {}) as UserModel
     if (!username) {
       throw new GameError(ErrorCode.PARAM_ERROR)
     }
 
     ctx.body = await UserService.getUserInfo(username)
+  }
+
+  /**
+   * 发送验证码
+   */
+  static async sendVerification(ctx: Context) {
+    const { email } = ctx.request.body as {
+      email?: string
+    }
+
+    if (!email) {
+      throw new GameError(ErrorCode.PARAM_ERROR)
+    }
+
+    ctx.body = await UserService.sendVerification(email)
   }
 }

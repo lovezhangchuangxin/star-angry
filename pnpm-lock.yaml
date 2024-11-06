@@ -11,6 +11,12 @@ importers:
       '@star-angry/api':
         specifier: workspace:^
         version: link:packages/api
+      '@star-angry/db':
+        specifier: workspace:^
+        version: link:packages/db
+      '@star-angry/shared':
+        specifier: workspace:^
+        version: link:packages/shared
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -132,6 +138,9 @@ importers:
       '@types/koa__cors':
         specifier: ^5.0.0
         version: 5.0.0
+      '@types/nodemailer':
+        specifier: ^6.4.16
+        version: 6.4.16
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.6)(typescript@5.6.3)
@@ -1215,6 +1224,12 @@ packages:
     resolution: {integrity: sha512-VEI7OdvK2wP7XHnsuXbAJnEpEkF6NjSN45QJlL4VGqZSXsnicpesdTWsg9RISeSdYd3yeRj/y3k5KGjUXYnFwQ==}
     dependencies:
       undici-types: 6.19.8
+    dev: true
+
+  /@types/nodemailer@6.4.16:
+    resolution: {integrity: sha512-uz6hN6Pp0upXMcilM61CoKyjT7sskBoOWpptkjjJp8jIMlTdc3xG01U7proKkXzruMS4hS0zqtHNkNPFB20rKQ==}
+    dependencies:
+      '@types/node': 20.17.6
     dev: true
 
   /@types/qs@6.9.16:
