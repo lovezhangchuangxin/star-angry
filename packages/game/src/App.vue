@@ -9,6 +9,7 @@ import { UserApi } from '@star-angry/api'
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
+import io from 'socket.io-client'
 
 const route = useRoute()
 const router = useRouter()
@@ -37,6 +38,12 @@ onMounted(() => {
     if (route.path === '/login') {
       router.replace('/')
     }
+  })
+
+  const socket = io('http://localhost:7788')
+
+  socket.on('connect', () => {
+    console.log('connect')
   })
 
   // 每隔一定时间刷新 token

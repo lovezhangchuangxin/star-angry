@@ -13,6 +13,7 @@
     "@star-angry/db": "workspace:^",
     "@star-angry/shared": "workspace:^",
     "element-plus": "^2.8.7",
+    "socket.io-client": "^4.8.1",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },
