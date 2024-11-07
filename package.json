@@ -17,7 +17,9 @@
     "dev:game": "pnpm --filter @star-angry/game dev",
     "dev:backend": "pnpm --filter @star-angry/backend dev",
     "build:game": "pnpm --filter @star-angry/game build",
-    "build:backend": "pnpm --filter @star-angry/backend build"
+    "build:backend": "pnpm --filter @star-angry/backend build",
+    "docs:dev": "pnpm --filter @star-angry/docs docs:dev",
+    "docs:build": "pnpm --filter @star-angry/docs docs:build"
   },
   "keywords": [
     "star",
