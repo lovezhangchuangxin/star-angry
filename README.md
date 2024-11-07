@@ -2,9 +2,13 @@
 
 ## 技术栈
 
-Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
+采用 _pnpm_ 作为包管理工具搭建 Monorepo 仓库。
 
-项目采用 _pnpm_ 作为包管理工具搭建 Monorepo 仓库。
+前端：Vue3 + Vite + TypeScript + Element Plus + Less + Pinia + Vue Router
+
+后端：Node.js + Koa + TypeScript + koa-router + leveldb
+
+后端技术文档：[packages/backend/README.md](packages/backend/README.md)
 
 ## 项目结构
 
@@ -33,7 +37,7 @@ pnpm install
 
 ```env
 GAME_PORT=7788
-JWT_SECRET=
+JWT_SECRET=xxx
 
 # 邮箱配置
 MAIL_HOST=
@@ -56,3 +60,7 @@ pnpm dev:game    # 启动前端
 ```bash
 pnpm commit
 ```
+
+## 注意
+
+目前前端环境变量解析有些问题，请不要轻易修改端口号。
