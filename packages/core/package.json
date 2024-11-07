@@ -1,0 +1,13 @@
+{
+  "name": "@star-angry/core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@star-angry/shared": "workspace:^"
+  }
+}

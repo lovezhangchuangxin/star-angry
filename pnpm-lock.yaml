@@ -11,6 +11,9 @@ importers:
       '@star-angry/api':
         specifier: workspace:^
         version: link:packages/api
+      '@star-angry/core':
+        specifier: workspace:^
+        version: link:packages/core
       '@star-angry/db':
         specifier: workspace:^
         version: link:packages/db
@@ -157,6 +160,12 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0(@types/node@20.17.6)(typescript@5.6.3)
 
+  packages/core:
+    dependencies:
+      '@star-angry/shared':
+        specifier: workspace:^
+        version: link:../shared
+
   packages/db:
     dependencies:
       level:
@@ -177,6 +186,9 @@ importers:
       element-plus:
         specifier: ^2.8.7
         version: 2.8.7(vue@3.5.12)
+      konva:
+        specifier: ^9.3.16
+        version: 9.3.16
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
@@ -3568,6 +3580,10 @@ packages:
       vary: 1.1.2
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /konva@9.3.16:
+    resolution: {integrity: sha512-qa47cefGDDHzkToGRGDsy24f/Njrz7EHP56jQ8mlDcjAPO7vkfTDeoBDIfmF7PZtpfzDdooafQmEUJMDU2F7FQ==}
     dev: false
 
   /less@4.2.0:

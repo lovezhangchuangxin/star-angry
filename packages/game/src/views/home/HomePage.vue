@@ -1,11 +1,15 @@
 <template>
-  <div class="home">{{ userStore.username }} 登录成功！速速帮忙写代码！</div>
+  <div class="home">
+    <GameMap :seed="0.63" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/store'
+import GameMap from '@/components/gameMap/index.vue'
 
 const userStore = useUserStore()
+console.log(userStore.username)
 </script>
 
 <style scoped lang="less">
