@@ -21,7 +21,9 @@ app.use(KoaStatic(path.resolve(__dirname, '../static')))
 // 处理全局异常
 app.use(globalErrorHandler)
 // 配置 jwt
-app.use(jwt({ secret: process.env.JWT_SECRET! }).unless({ path: [/^\/login/] }))
+app.use(
+  jwt({ secret: process.env.JWT_SECRET! }).unless({ path: [/^\/api\/login/] }),
+)
 // 配置 body 解析
 app.use(bodyParser())
 // 配置路由
