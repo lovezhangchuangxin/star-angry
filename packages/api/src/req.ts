@@ -3,7 +3,7 @@ import { DafaultRequestMethod, ResponseData } from './types'
 
 // 创建 axios 实例
 export const instance = axios.create({
-  baseURL: `http://localhost:${(import.meta as any).GAME_PORT || 7788}`,
+  baseURL: `http://localhost:${(import.meta as any).GAME_PORT || 7788}/api`,
   timeout: 10000,
 })
 
