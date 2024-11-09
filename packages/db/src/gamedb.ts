@@ -33,15 +33,19 @@ export class GameDB extends DB {
   initData() {
     return {
       user: [],
+      messages: {},
     } as GameModel
   }
 
   autoSave() {
-    setInterval(() => {
-      if (!this.dataCache) {
-        return
-      }
-      this.set('game', JSON.stringify(this.dataCache))
-    }, 1000)
+    setInterval(
+      () => {
+        if (!this.dataCache) {
+          return
+        }
+        this.set('game', JSON.stringify(this.dataCache))
+      },
+      1000 * 60 * 5,
+    )
   }
 }

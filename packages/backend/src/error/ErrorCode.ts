@@ -20,4 +20,7 @@ export class ErrorCode {
   static TOKEN_INVALID = new ErrorCode(1004, 'token 无效 或 过期')
   static VERIFICATION_ERROR = new ErrorCode(1005, '验证码错误')
   static SEND_MAIL_ERROR = new ErrorCode(1006, '发送邮件失败')
+
+  static ROOM_NOT_EXIST = new ErrorCode(2001, '房间不存在')
+  static MESSAGE_TOO_LONG = new ErrorCode(2002, '消息太长')
 }

@@ -1,3 +1,5 @@
+import { ErrorCode } from '../error/ErrorCode'
+
 export class Result {
   constructor(
     public code: number,
@@ -9,7 +11,12 @@ export class Result {
     return new Result(0, 'success', data)
   }
 
-  static error(code: number, msg: string) {
-    return new Result(code, msg, null)
+  static error(code: number, msg: string): Result
+  static error(code: ErrorCode): Result
+  static error(code: number | ErrorCode, msg?: string) {
+    if (code instanceof ErrorCode) {
+      return new Result(code.code, code.msg, null)
+    }
+    return new Result(code, msg!, null)
   }
 }

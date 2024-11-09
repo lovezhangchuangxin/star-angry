@@ -9,10 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bytemd/plugin-gfm": "^1.21.0",
+    "@bytemd/plugin-highlight": "^1.21.0",
+    "@bytemd/vue-next": "^1.21.0",
+    "@element-plus/icons-vue": "^2.3.1",
     "@star-angry/api": "workspace:^",
     "@star-angry/db": "workspace:^",
     "@star-angry/shared": "workspace:^",
+    "bytemd": "^1.21.0",
     "element-plus": "^2.8.7",
+    "github-markdown-css": "^5.5.1",
     "konva": "^9.3.16",
     "socket.io-client": "^4.8.1",
     "vue": "^3.5.12",
@@ -24,6 +30,7 @@
     "typescript": "^5.6.3",
     "unplugin-auto-import": "^0.18.3",
     "unplugin-element-plus": "^0.8.0",
+    "unplugin-icons": "^0.20.1",
     "unplugin-vue-components": "^0.27.4",
     "vite": "^5.4.10",
     "vue-tsc": "^2.1.8"

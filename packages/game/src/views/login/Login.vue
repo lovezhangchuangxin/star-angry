@@ -285,10 +285,10 @@ const resetPassword = async () => {
 
 <style scoped lang="less">
 .loginbox {
-  margin: 30px auto;
+  margin-top: -100px;
   padding: 20px 0;
   width: 380px;
-  background-color: #fff;
+  background: radial-gradient(circle, #1c1f2b, #20222a);
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 

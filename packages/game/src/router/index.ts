@@ -14,6 +14,11 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
   },
   {
+    path: '/chat',
+    name: 'Chat',
+    component: () => import('@/views/chat/ChatPage.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404/NotFoundPage.vue'),
@@ -25,12 +30,12 @@ const router = createRouter({
   routes: [...routes],
 })
 
-// router.beforeEach((to, _, next) => {
-//   if (to.name !== 'Login' && !localStorage.getItem('token')) {
-//     next({ name: 'Login' })
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, _, next) => {
+  if (to.name !== 'Login' && !localStorage.getItem('token')) {
+    next({ name: 'Login' })
+  } else {
+    next()
+  }
+})
 
 export default router

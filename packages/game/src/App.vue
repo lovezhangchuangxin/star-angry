@@ -1,15 +1,16 @@
 <template>
   <div class="app">
+    <NavHeader />
     <router-view></router-view>
   </div>
 </template>
 
 <script setup lang="ts">
-import { UserApi } from '@star-angry/api'
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { UserApi } from '@star-angry/api'
 import { useUserStore } from '@/store'
-import io from 'socket.io-client'
+import NavHeader from '@/components/navbar/NavHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,12 +41,6 @@ onMounted(() => {
     }
   })
 
-  const socket = io('http://localhost:7788')
-
-  socket.on('connect', () => {
-    console.log('connect')
-  })
-
   // 每隔一定时间刷新 token
   setInterval(refreshToken, 5 * 60 * 1000)
   // 上线时立即刷新一次 token
@@ -56,5 +51,8 @@ onMounted(() => {
 <style scoped lang="less">
 .app {
   height: 100vh;
+  overflow: hidden;
+  background: #1c1f2b;
+  color: #e9e9e9;
 }
 </style>
