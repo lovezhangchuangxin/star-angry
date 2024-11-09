@@ -6,6 +6,8 @@ import { ErrorCode } from '../../../error/ErrorCode'
 import { MessageModel } from '@star-angry/db/src/model/message'
 
 export const messageEventHandler = (socket: Socket, io: Server) => {
+  socket.join('__room_keqing')
+
   socket.on('getChat', async (toId: string, callback) => {
     const fromId = socket.userId
     if (!fromId || !toId) {
@@ -24,6 +26,7 @@ export const messageEventHandler = (socket: Socket, io: Server) => {
     const userMap = new Map<string, string>()
     const messageData = messages.map((item) => {
       let fromName = userMap.get(item.fromId)
+
       if (!fromName) {
         fromName =
           data.user.find((user) => user.id === item.fromId)?.username ||

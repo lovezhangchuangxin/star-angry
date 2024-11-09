@@ -24,7 +24,9 @@ import ChatWindow from './ChatWindow.vue'
 import { message as toast } from '@/utils/message'
 import { ResponseData } from '@star-angry/api'
 import { MessageInfo } from '@star-angry/db/src/model/message'
+import { useUserStore } from '@/store'
 
+const userStore = useUserStore()
 const personList = ref<{ id: string; username: string }[]>([
   { id: '__room_keqing', username: '聊天大厅' },
 ])
@@ -72,7 +74,10 @@ onMounted(() => {
     localStorage.setItem('chatPersonList', '[]')
   }
 
-  socket.value.on('receiveChat', (message: MessageInfo) => {
+  socket.value.on('receiveChat', (fromId: string, message: MessageInfo) => {
+    if (fromId === userStore.id) {
+      return
+    }
     messages.value.push(message)
   })
 })
