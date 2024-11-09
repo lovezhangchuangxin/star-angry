@@ -7,7 +7,7 @@
       <div
         v-for="message in data"
         :key="message.id"
-        :class="message.fromId === useStore.id ? 'right' : 'left'"
+        :class="message.fromId === useStore.id && 'me'"
       >
         <p>{{ message.fromName }}</p>
         <MdViewer :value="message.content" />
@@ -94,12 +94,8 @@ const sendMessage = () => {
         color: #999;
       }
 
-      &.right {
-        text-align: right;
-      }
-
-      &.left {
-        text-align: left;
+      &.me > p {
+        color: #aba7f7;
       }
     }
   }
