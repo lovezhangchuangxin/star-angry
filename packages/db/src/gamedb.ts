@@ -25,6 +25,11 @@ export class GameDB extends DB {
     return (this.dataCache = this.initData())
   }
 
+  async setData(data: GameModel) {
+    this.dataCache = data
+    this.set('game', JSON.stringify(data))
+  }
+
   initData() {
     return {
       user: [],
