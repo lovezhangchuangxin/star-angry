@@ -1,4 +1,4 @@
-import { structuresMap } from 'packages/core/src'
+import { structuresMap } from '@star-angry/core'
 import { req } from './req'
 
 export class StructureApi {

@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { io, Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
 import { structuresMap, StructureType } from '@star-angry/core'
@@ -41,6 +41,10 @@ onMounted(() => {
   setInterval(() => {
     getStructures()
   }, 1000)
+})
+
+onUnmounted(() => {
+  socket.value?.disconnect()
 })
 
 // 获取建筑
