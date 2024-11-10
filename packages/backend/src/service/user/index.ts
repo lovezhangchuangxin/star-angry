@@ -50,6 +50,7 @@ export default class UserService {
     }
     const { password: _, ...safeUserInfo } = userInfo
     data.user.push(userInfo)
+    GameDB.getDB().processUserData(data.user, data.userData, true)
 
     // 生成 jwt
     const token = jwt.sign(

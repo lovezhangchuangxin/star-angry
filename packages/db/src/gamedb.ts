@@ -42,7 +42,11 @@ export class GameDB extends DB {
     this.set('game', JSON.stringify(data))
   }
 
-  processUserData(users: UserModel[], userDataMap: UseDataMap) {
+  processUserData(
+    users: UserModel[],
+    userDataMap: UseDataMap,
+    newPlayer = false,
+  ) {
     users.forEach(({ id }) => {
       const userData = userDataMap[id] || {}
       if (!userData?.structure) {
@@ -50,7 +54,7 @@ export class GameDB extends DB {
           energyStorage: new EnergyStorage({ level: 1, store: 2000 }),
           metalStorage: new MetalStorage({ level: 1, store: 2000 }),
         }
-      } else {
+      } else if (!newPlayer) {
         Object.keys(userData.structure).forEach((key) => {
           let structure =
             userData.structure[key as keyof typeof userData.structure]
