@@ -114,6 +114,9 @@ const addIntent = (
   justify-content: center;
   align-items: center;
   height: 100%;
+  padding-top: 50px;
+  overflow: auto;
+  scrollbar-width: none;
 
   .box {
     display: flex;
@@ -121,15 +124,16 @@ const addIntent = (
     gap: 10px;
 
     .card {
-      width: 200px;
-      height: 200px;
+      flex: 1;
+      min-width: 200px;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       padding: 10px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      background-color: #181623;
 
       p {
         margin: 0;
