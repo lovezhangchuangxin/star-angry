@@ -7,6 +7,7 @@ import { ErrorCode } from '../../error/ErrorCode'
 import { GameError } from '../../error/GameError'
 import { TimeCache } from '@star-angry/shared'
 import { MailUtil } from '../../utils/mail'
+import StructureService from '../structure'
 
 export default class UserService {
   static verificationCache = new TimeCache()
@@ -126,5 +127,31 @@ export default class UserService {
       UserService.verificationCache.set(email, verification, 5 * 60 * 1000)
       return Result.success({ verification })
     }
+  }
+
+  /**
+   * 获取排行榜
+   */
+  static async getRank() {
+    const data = await GameDB.getDB().getData()
+    const users = data.user
+      .map((user) => {
+        const structureMap = data.userData[user.id]?.structure || {}
+        Object.values(structureMap).forEach((structure) => {
+          if ('update' in structure) {
+            StructureService.addIntent(user.id, structure.id, 'update')
+          }
+        })
+        const energyStorage = structureMap.energyStorage
+        const metalStorage = structureMap.metalStorage
+        const store = (energyStorage?.store || 0) + (metalStorage?.store || 0)
+        return {
+          id: user.id,
+          username: user.username,
+          score: store,
+        }
+      })
+      .sort((a, b) => b.score - a.score)
+    return Result.success(users)
   }
 }

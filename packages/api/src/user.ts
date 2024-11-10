@@ -40,4 +40,17 @@ export class UserApi {
       email,
     })
   }
+
+  /**
+   * 获取排行榜
+   */
+  static async getRank() {
+    return req<
+      {
+        id: string
+        username: string
+        score: number
+      }[]
+    >('GET', '/user/rank')
+  }
 }

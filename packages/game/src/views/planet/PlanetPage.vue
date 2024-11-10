@@ -29,6 +29,7 @@ import { structuresMap, StructureType } from '@star-angry/core'
 
 const socket = ref<Socket | null>(null)
 const structures = ref<StructureType[]>([])
+const timerId = ref<number | null>(null)
 
 onMounted(() => {
   socket.value = io('http://localhost:7788', {
@@ -41,12 +42,13 @@ onMounted(() => {
     console.log('connect')
   })
 
-  setInterval(() => {
+  timerId.value = setInterval(() => {
     getStructures()
-  }, 1000)
+  }, 1000) as unknown as number
 })
 
 onUnmounted(() => {
+  clearInterval(timerId.value!)
   socket.value?.disconnect()
 })
 

@@ -79,4 +79,11 @@ export default class UserController {
 
     ctx.body = await UserService.sendVerification(email)
   }
+
+  /**
+   * 获取排行榜
+   */
+  static async getRank(ctx: Context) {
+    ctx.body = await UserService.getRank()
+  }
 }

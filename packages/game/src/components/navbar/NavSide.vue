@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChatDotRound } from '@element-plus/icons-vue'
+import { ChatDotRound, Memo } from '@element-plus/icons-vue'
 import { onMounted, toRefs } from 'vue'
 import type { Component } from 'vue'
 
@@ -41,6 +41,11 @@ const data: NavSideDataItem[] = [
     title: '聊天',
     icon: ChatDotRound,
     path: '/chat',
+  },
+  {
+    title: '排行榜',
+    icon: Memo,
+    path: '/rank',
   },
 ]
 
