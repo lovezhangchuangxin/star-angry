@@ -7,6 +7,11 @@
         <CloseBold v-else />
       </span>
       <span style="cursor: pointer" @click="router.push('/')">星怒</span>
+      <span
+        style="margin-left: 100px; cursor: pointer"
+        @click="router.push('/planet')"
+        >我的星球</span
+      >
     </div>
 
     <div class="right">

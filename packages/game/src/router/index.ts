@@ -14,6 +14,11 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
   },
   {
+    path: '/planet',
+    name: 'Planet',
+    component: () => import('@/views/planet/PlanetPage.vue'),
+  },
+  {
     path: '/chat',
     name: 'Chat',
     component: () => import('@/views/chat/ChatPage.vue'),
