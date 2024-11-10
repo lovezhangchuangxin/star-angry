@@ -15,7 +15,11 @@ export const upgrade = (object: MetalMine, planetObjects: StructureType[]) => {
 
   // 获取升级所需资源
   const cost = object.calcUpgradeCost(object.level)
-  if (energyStorage.store < cost.energy || metalStorage.store < cost.metal) {
+  // 兜底，避免大怨种建筑点错了，最后资源不够无法升级
+  if (
+    object.level &&
+    (energyStorage.store < cost.energy || metalStorage.store < cost.metal)
+  ) {
     return false
   }
 
