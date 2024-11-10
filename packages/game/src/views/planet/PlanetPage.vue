@@ -5,6 +5,9 @@
         <template v-if="structure">
           <p>名称：{{ structure.name }}</p>
           <p>等级：{{ structure.level }}</p>
+          <p v-if="'calcOutput' in structure">
+            产量：{{ structure.calcOutput(structure.level) }}/s
+          </p>
           <p v-if="'store' in structure">
             存储：{{ structure.store }} /
             {{ structure.calcCapacity(structure.level) }}
