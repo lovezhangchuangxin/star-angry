@@ -1,4 +1,9 @@
-import { EnergyStorage, MetalStorage, structuresMap } from '@star-angry/core'
+import {
+  EnergyStorage,
+  MetalStorage,
+  processor,
+  structuresMap,
+} from '@star-angry/core'
 import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
 import { UseDataMap, UserModel } from './model/user'
@@ -65,7 +70,14 @@ export class GameDB extends DB {
             structure as any,
           )
           if ('update' in structure) {
-            structure.update()
+            const getUserObject = (userId: string, objectId?: string) => {
+              const structures = Object.values(userDataMap[userId].structure)
+              if (!objectId) {
+                return structures
+              }
+              return structures.filter((s) => s.id === objectId)
+            }
+            processor({ objectId: key, type: 'update' }, id, getUserObject)
           }
           userData.structure[key as keyof typeof userData.structure] =
             structure as any
