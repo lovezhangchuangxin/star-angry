@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { GameDB } from '@star-angry/db'
 import { Result } from '../../../utils/result'
 import { ErrorCode } from '../../../error/ErrorCode'
-import { MessageModel } from '@star-angry/db/src/model/message'
 
 export const messageEventHandler = (socket: Socket, io: Server) => {
   socket.join('__room_keqing')
@@ -22,7 +21,8 @@ export const messageEventHandler = (socket: Socket, io: Server) => {
     const key = isRoomId(toId)
       ? toId
       : [fromId, toId].sort((a, b) => a.localeCompare(b)).join('-')
-    const messages = data.messages[key] || []
+    // 暂时只返回最近的50条
+    const messages = (data.messages[key] || []).slice(-50)
     const userMap = new Map<string, string>()
     const messageData = messages.map((item) => {
       let fromName = userMap.get(item.fromId)
