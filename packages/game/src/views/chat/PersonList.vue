@@ -60,7 +60,7 @@ const emit = defineEmits<{
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .chat-person {
     li {
       padding: 8px;

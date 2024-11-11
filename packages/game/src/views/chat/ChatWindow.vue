@@ -71,7 +71,7 @@ const sendMessage = () => {
 
 <style scoped lang="less">
 .chat-window {
-  flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
 
@@ -118,9 +118,12 @@ const sendMessage = () => {
 }
 
 :deep(.markdown-viewer) {
+  width: 100%;
   padding: 5px 10px;
   border-radius: 5px;
   background-color: #1c1f2b;
+  box-sizing: border-box;
+  overflow-x: auto;
 }
 
 @media (max-width: 600px) {

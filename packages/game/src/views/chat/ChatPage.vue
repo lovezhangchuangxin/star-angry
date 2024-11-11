@@ -9,6 +9,7 @@
       />
       <ChatWindow
         :to-name="toName"
+        class="chat-window"
         :data="messages"
         @send-message="handleSendMessage"
       />
@@ -156,12 +157,11 @@ const handleSendMessage = (message: string, ok: () => void) => {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .chat {
-    height: 100%;
     .content {
       width: 100%;
-      height: 85%;
+      height: calc(100% - 100px);
       min-width: 0;
       border-radius: 0;
       box-shadow: none;
@@ -169,6 +169,10 @@ const handleSendMessage = (message: string, ok: () => void) => {
 
     .person-list {
       width: 80px;
+    }
+
+    .chat-window {
+      width: calc(100% - 80px);
     }
   }
 }
