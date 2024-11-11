@@ -11,7 +11,10 @@
         :key="message.id"
         :class="message.fromId === useStore.id && 'me'"
       >
-        <p>{{ message.fromName }}</p>
+        <p>
+          {{ message.fromName }}
+          <span class="time">{{ formatTime(message.time) }}</span>
+        </p>
         <MdViewer :value="message.content" />
       </div>
     </div>
@@ -34,6 +37,7 @@
 <script setup lang="ts">
 import { nextTick, ref, toRefs, watch } from 'vue'
 import { ElInput, ElButton } from 'element-plus'
+import dayjs from 'dayjs'
 import { MessageInfo } from '@star-angry/db/src/model/message'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
 import { useUserStore } from '@/store'
@@ -67,6 +71,15 @@ const clearMessage = () => {
 const sendMessage = () => {
   emit('sendMessage', message.value, clearMessage)
 }
+
+const formatTime = (time: number) => {
+  // 今天的时间只显示时分
+  if (dayjs().isSame(time, 'day')) {
+    return dayjs(time).format('HH:mm')
+  }
+  // 否则显示月日时分
+  return dayjs(time).format('MM-DD HH:mm')
+}
 </script>
 
 <style scoped lang="less">
@@ -98,6 +111,11 @@ const sendMessage = () => {
       &.me > p {
         color: #aba7f7;
       }
+    }
+
+    .time {
+      color: #676767;
+      font-size: 12px;
     }
   }
 

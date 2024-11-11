@@ -17,6 +17,7 @@
     "@star-angry/db": "workspace:^",
     "@star-angry/shared": "workspace:^",
     "bytemd": "^1.21.0",
+    "dayjs": "^1.11.13",
     "element-plus": "^2.8.7",
     "github-markdown-css": "^5.5.1",
     "konva": "^9.3.16",
