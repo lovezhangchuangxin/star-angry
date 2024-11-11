@@ -147,10 +147,29 @@ const handleSendMessage = (message: string, ok: () => void) => {
     background: #1c1f2b;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    // 移除间距
+    gap: 0;
   }
 
   .person-list {
     width: 100px;
+  }
+}
+
+@media (max-width: 600px) {
+  .chat {
+    height: 100%;
+    .content {
+      width: 100%;
+      height: 85%;
+      min-width: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .person-list {
+      width: 80px;
+    }
   }
 }
 </style>

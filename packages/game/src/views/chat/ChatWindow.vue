@@ -1,7 +1,9 @@
 <template>
   <!-- 聊天窗 -->
   <div class="chat-window">
-    <p class="title">{{ toName }}</p>
+    <p class="title" :style="toName ? 'border-bottom: 1px solid #303543;' : ''">
+      {{ toName }}
+    </p>
     <!-- 内容区 -->
     <div class="content" ref="contentRef">
       <div
@@ -77,7 +79,6 @@ const sendMessage = () => {
     margin: 0;
     padding: 12px;
     text-align: center;
-    border-bottom: 1px solid #303543;
   }
 
   .content {
@@ -120,5 +121,32 @@ const sendMessage = () => {
   padding: 5px 10px;
   border-radius: 5px;
   background-color: #1c1f2b;
+}
+
+@media (max-width: 600px) {
+  .chat-window {
+    .title {
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    .content {
+      padding: 8px;
+    }
+
+    .typing {
+      padding: 8px;
+      gap: 8px;
+    }
+  }
+
+  :deep(.el-textarea__inner) {
+    font-size: 14px;
+  }
+
+  :deep(.markdown-viewer) {
+    padding: 4px 8px;
+    font-size: 14px;
+  }
 }
 </style>

@@ -59,4 +59,14 @@ const emit = defineEmits<{
     }
   }
 }
+
+@media (max-width: 600px) {
+  .chat-person {
+    li {
+      padding: 8px;
+      padding-left: 12px;
+      font-size: 14px;
+    }
+  }
+}
 </style>
