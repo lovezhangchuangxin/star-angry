@@ -10,6 +10,7 @@ const io = new Server(server, {
   cors: {
     origin: '*',
   },
+  path: '/ws',
 })
 
 createConnection(io)

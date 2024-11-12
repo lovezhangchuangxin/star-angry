@@ -7,6 +7,10 @@ import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import ElementPlus from 'unplugin-element-plus/vite'
 import { resolve } from 'path'
+import dotenv from 'dotenv'
+
+dotenv.config({ path: resolve(__dirname, '../../config/env/.env') })
+const port = process.env.GAME_PORT
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -38,6 +42,19 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+    },
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: `http://localhost:${port}`,
+        changeOrigin: true,
+      },
+      '/ws': {
+        target: `ws://localhost:${port}`,
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
 })

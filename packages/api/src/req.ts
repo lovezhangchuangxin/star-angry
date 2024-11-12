@@ -1,13 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { DafaultRequestMethod, ResponseData } from './types'
 
-const isDev = import.meta.env.MODE === 'development'
-const ip = isDev ? 'localhost' : import.meta.env.GAME_HOST
-const port = import.meta.env.GAME_PORT || '7788'
-
 // 创建 axios 实例
 export const instance = axios.create({
-  baseURL: `http://${ip}:${port}/api`,
+  baseURL: `/api`,
   timeout: 10000,
 })
 

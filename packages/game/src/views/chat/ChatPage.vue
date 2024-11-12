@@ -26,7 +26,6 @@ import { message as toast } from '@/utils/message'
 import { ResponseData } from '@star-angry/api'
 import { MessageInfo } from '@star-angry/db/src/model/message'
 import { useUserStore } from '@/store'
-import { baseURL } from '@/utils/env'
 
 const userStore = useUserStore()
 const personList = ref<{ id: string; username: string }[]>([
@@ -38,10 +37,11 @@ const messages = ref<MessageInfo[]>([])
 const socket = ref<Socket | null>(null)
 
 onMounted(() => {
-  socket.value = io(`${baseURL}`, {
+  socket.value = io('', {
     query: {
       token: localStorage.getItem('token'),
     },
+    path: '/ws',
   })
 
   socket.value.on('connect', () => {
