@@ -1,1 +1,10 @@
 /// <reference types="vite/client" />
+
+interface ImportMetaEnv {
+  readonly GAME_HOST: string
+  readonly GAME_PORT: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

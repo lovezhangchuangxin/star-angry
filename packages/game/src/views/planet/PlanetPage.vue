@@ -26,13 +26,14 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { io, Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
 import { structuresMap, StructureType } from '@star-angry/core'
+import { baseURL } from '@/utils/env'
 
 const socket = ref<Socket | null>(null)
 const structures = ref<StructureType[]>([])
 const timerId = ref<number | null>(null)
 
 onMounted(() => {
-  socket.value = io('http://localhost:7788', {
+  socket.value = io(`${baseURL}`, {
     query: {
       token: localStorage.getItem('token'),
     },

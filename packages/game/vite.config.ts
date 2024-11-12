@@ -33,7 +33,7 @@ export default defineConfig({
     }),
     ElementPlus({}),
   ],
-  envDir: '../../env',
+  envDir: '../../config/env',
   envPrefix: ['GAME_'],
   resolve: {
     alias: {

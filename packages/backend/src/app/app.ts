@@ -8,7 +8,7 @@ import path from 'path'
 import router from '../router'
 import { globalErrorHandler } from '../error/globalErrorHandler'
 
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
+dotenv.config({ path: path.resolve(__dirname, '../../../../config/env/.env') })
 
 const app = new Koa()
 

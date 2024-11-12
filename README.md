@@ -33,24 +33,32 @@ pnpm install
 
 2. 配置环境变量
 
-在根目录下创建 `.env` 文件，内容如下，填写必要内容：
-
-```env
-GAME_PORT=7788
-JWT_SECRET=xxx
-
-# 邮箱配置
-MAIL_HOST=
-MAIL_PORT=
-MAIL_USERNAME=
-MAIL_PASSWORD=
-```
+在 `config/env` 目录下创建 `.env` 文件，复制 `.env.template` 中的内容，并修改为自己的配置。
 
 3. 启动项目
 
 ```bash
 pnpm dev:backend # 启动后端
 pnpm dev:game    # 启动前端
+```
+
+4. 项目部署
+
+前端打包:
+
+```bash
+pnpm build:game
+```
+
+打包好后的文件在 `packages/game/dist` 目录下。放到 nginx 中。
+
+后端无需打包直接部署，比如使用 pm2：
+
+```bash
+# 安装 pm2
+npm install -g pm2
+# 启动后端
+pm2 start pnpm --name star-anrgy -- run dev:backend
 ```
 
 ## 提交规范
