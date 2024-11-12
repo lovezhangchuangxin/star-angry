@@ -52,6 +52,8 @@ pnpm build:game
 
 打包好后的文件在 `packages/game/dist` 目录下。放到 nginx 中。
 
+nginx 如何配置？参考 [packages/game/nginx.conf](packages/game/nginx.conf)。
+
 后端无需打包直接部署，比如使用 pm2：
 
 ```bash
