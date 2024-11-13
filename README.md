@@ -25,24 +25,24 @@
 
 ## 项目启动
 
-1. 下载依赖
+### 1. 下载依赖
 
 ```bash
 pnpm install
 ```
 
-2. 配置环境变量
+### 2. 配置环境变量
 
 在 `config/env` 目录下创建 `.env` 文件，复制 `.env.template` 中的内容，并修改为自己的配置。
 
-3. 启动项目
+### 3. 启动项目
 
 ```bash
 pnpm dev:backend # 启动后端
 pnpm dev:game    # 启动前端
 ```
 
-4. 项目部署
+### 4. 项目部署
 
 前端打包:
 
@@ -70,7 +70,3 @@ pm2 start pnpm --name star-anrgy -- run dev:backend
 ```bash
 pnpm commit
 ```
-
-## 注意
-
-目前前端环境变量解析有些问题，请不要轻易修改端口号。
