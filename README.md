@@ -63,6 +63,29 @@ npm install -g pm2
 pm2 start pnpm --name star-anrgy -- run dev:backend
 ```
 
+### 5 Docker 部署
+
+```bash
+# 克隆仓库
+git clone https://github.com/lovezhangchuangxin/star-angry.git
+
+# 进入项目目录
+cd star-angry/
+
+# 配置文件
+cp ./config/env/.env.template ./config/env/.env
+# 修改后台端口 GAME_PORT=7788
+sed -i 's/GAME_PORT=xxxx/GAME_PORT=7788/g' ./config/env/.env
+# 其他配置自行修改
+
+# 编译镜像 (如有必要, 自行修改镜像源 /etc/docker/daemon.json)
+docker build -t star-angry/server:1.0.0 .
+# 启动容器
+docker run --restart always -d -p 7788:7788 --name star-angry -v $(pwd)/config/:/www/config/ -v $(pwd)/game-data/:/www/packages/backend/dist/ star-angry/server:1.0.0
+# 直接访问 7788 端口, 或者自行转发端口
+curl http://localhost:7788/
+```
+
 ## 提交规范
 
 建议不要使用 `git commit` 命令，而是使用封装好的 `pnpm commit` 命令或者 `git-cz` 命令，这样可以保证提交信息的格式统一。
