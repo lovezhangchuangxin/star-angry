@@ -63,7 +63,7 @@ npm install -g pm2
 pm2 start pnpm --name star-anrgy -- run dev:backend
 ```
 
-### 5 Docker 部署
+### 5. Docker 部署
 
 ```bash
 # 克隆仓库
@@ -82,6 +82,25 @@ sed -i 's/GAME_PORT=xxxx/GAME_PORT=7788/g' ./config/env/.env
 docker build -t star-angry/server:1.0.0 .
 # 启动容器
 docker run --restart always -d -p 7788:7788 --name star-angry -v $(pwd)/config/:/www/config/ -v $(pwd)/game-data/:/www/packages/backend/dist/ star-angry/server:1.0.0
+# 直接访问 7788 端口, 或者自行转发端口
+curl http://localhost:7788/
+```
+
+### 6. Docker-compose 部署
+
+
+> 如需修改 `.env` 的配置, 可以直接修改 `docker-compose.yml` 文件中的配置, 例如修改 `JWT_SECRET`
+
+```bash
+# 克隆仓库
+git clone https://github.com/lovezhangchuangxin/star-angry.git
+
+# 进入项目目录
+cd star-angry/
+
+# 启动
+docker-compose up -d
+
 # 直接访问 7788 端口, 或者自行转发端口
 curl http://localhost:7788/
 ```
