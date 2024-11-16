@@ -154,4 +154,34 @@ export default class UserService {
       .sort((a, b) => b.score - a.score)
     return Result.success(users)
   }
+
+  /**
+   * 获取等级排行榜
+   */
+  static async getLevelRank() {
+    const data = await GameDB.getDB().getData()
+    const users = data.user
+      .map((user) => {
+        const structureMap = data.userData[user.id]?.structure || {}
+        Object.values(structureMap).forEach((structure) => {
+          if ('update' in structure) {
+            StructureService.addIntent(user.id, structure.id, 'update')
+          }
+        })
+        let totelLevel = 0
+        let maxLevel = 0
+        Object.values(structureMap).forEach((structure) => {
+          totelLevel += structure.level || 0
+          maxLevel = Math.max(maxLevel, structure.level || 0)
+        })
+        return {
+          id: user.id,
+          username: user.username,
+          totalLevel: totelLevel,
+          maxLevel: maxLevel,
+        }
+      })
+      .sort((a, b) => b.totalLevel - a.totalLevel)
+    return Result.success(users)
+  }
 }
