@@ -15,7 +15,11 @@
           :height="rankHeigth"
         >
           <el-table-column prop="username" label="玩家" />
-          <el-table-column prop="score" label="积分" align="right" />
+          <el-table-column prop="score" label="积分" align="right">
+            <template v-slot="scoped">
+              {{ numberWithCommas(scoped.row.score) }}
+            </template>
+          </el-table-column>
         </el-table>
       </el-card>
     </el-col>
@@ -51,11 +55,12 @@
 
 <script setup lang="ts">
 import { message } from '@/utils/message'
+import { numberWithCommas } from '@/utils/number'
 import { UserApi } from '@star-angry/api'
 import { onMounted, ref } from 'vue'
 
-const rankRef = ref(null)
-let rankHeigth = ref(500)
+const rankRef = ref()
+let rankHeigth = ref(100)
 
 const users = ref<
   {
@@ -75,18 +80,14 @@ const levelRank = ref<
 >([])
 
 onMounted(async () => {
-  if (document.documentElement.clientWidth > 768) {
-    rankHeigth.value = rankRef.value.$el.clientHeight - 60
-  } else {
-    rankHeigth.value = rankRef.value.$el.clientHeight - 60
-  }
+  rankHeigth.value = rankRef.value.$el.clientHeight - 60
   UserApi.getRank()
     .then((res) => {
       if (res.code === 0) {
         users.value = res.data
       }
     })
-    .catch((error) => {
+    .catch(() => {
       message.error('获取排行榜失败')
     })
 
@@ -96,7 +97,7 @@ onMounted(async () => {
         levelRank.value = res.data
       }
     })
-    .catch((error) => {
+    .catch(() => {
       message.error('获取等级排行榜失败')
     })
 })
