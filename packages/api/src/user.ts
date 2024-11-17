@@ -53,4 +53,18 @@ export class UserApi {
       }[]
     >('GET', '/user/rank')
   }
+
+  /**
+   * 获取等级排行榜
+   */
+  static async getLevelRank() {
+    return req<
+      {
+        id: string
+        username: string
+        totalLevel: number
+        maxLevel: number
+      }[]
+    >('GET', '/user/levelRank')
+  }
 }

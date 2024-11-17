@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 登录注册框 -->
-    <div class="loginbox">
+    <el-card class="loginbox">
       <!-- 标题 -->
       <div class="title">
         <el-row>
@@ -133,7 +133,7 @@
           }}</el-link></el-space
         >
       </div>
-    </div>
+    </el-card>
   </div>
 </template>
 
@@ -288,9 +288,7 @@ const resetPassword = async () => {
   margin-top: -100px;
   padding: 20px 0;
   width: 380px;
-  background: radial-gradient(circle, #1c1f2b, #20222a);
   border-radius: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
   .title {
     display: flex;
