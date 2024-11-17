@@ -191,7 +191,10 @@ const addIntent = (
 const calcCapacityPercentage = (
   structure: MetalStorage | EnergyStorage,
 ): number => {
-  return (structure.store * 100) / structure.calcCapacity(structure.level)
+  return +(
+    (structure.store * 100) /
+    structure.calcCapacity(structure.level)
+  ).toFixed(2)
 }
 
 // 储量进度条颜色

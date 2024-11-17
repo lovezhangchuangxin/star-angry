@@ -70,7 +70,7 @@ onMounted(() => {
   color: #e9e9e9;
   font-size: 16px;
   overflow-y: auto;
-  z-index: 1;
+  z-index: 1000;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
   li {
