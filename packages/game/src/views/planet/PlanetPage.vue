@@ -216,6 +216,7 @@ const calcProcessColor = (structure: MetalStorage | EnergyStorage): string => {
   scrollbar-width: none;
 
   .el-space {
+    height: 100%;
     .box-card {
       min-width: 300px;
       .structure-name {
