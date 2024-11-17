@@ -1,4 +1,4 @@
-import { structuresMap } from '@star-angry/core'
+import { Structure } from '@star-angry/core'
 
 export interface UserModel {
   /**
@@ -41,9 +41,5 @@ export interface UseDataMap {
 }
 
 export interface UserDataModel {
-  structure: {
-    [type in keyof typeof structuresMap]?: InstanceType<
-      (typeof structuresMap)[type]
-    >
-  }
+  structures: Record<string, Structure>
 }

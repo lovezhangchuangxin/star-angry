@@ -1,12 +1,12 @@
-import {
-  EnergyStorage,
-  MetalStorage,
-  processor,
-  structuresMap,
-} from '@star-angry/core'
+import { processor, Structure, StructureConfigMap } from '@star-angry/core'
 import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
 import { UseDataMap, UserModel } from './model/user'
+import { EnergyStorageConfig } from 'packages/core/src/structures/base/energy-storage'
+import { MetalStorageConfig } from 'packages/core/src/structures/base/metal-storage'
+import { EnergyMineConfig } from 'packages/core/src/structures/base/energy-mine'
+import { MetalMineConfig } from 'packages/core/src/structures/base/metal-mine'
+import { MineComponent } from 'packages/core/src/components/mine'
 
 export class GameDB extends DB {
   protected dataCache: GameModel | null = null
@@ -52,39 +52,53 @@ export class GameDB extends DB {
     userDataMap: UseDataMap,
     newPlayer = false,
   ) {
+    // 先初始化所有玩家的建筑
     users.forEach(({ id }) => {
       const userData = userDataMap[id] || {}
-      if (!userData?.structure) {
-        userData.structure = {
-          energyStorage: new EnergyStorage({ level: 1, store: 2000 }),
-          metalStorage: new MetalStorage({ level: 1, store: 2000 }),
+      if (!userData?.structures) {
+        userData.structures = {
+          [EnergyStorageConfig.name]: new Structure(EnergyStorageConfig),
+          [MetalStorageConfig.name]: new Structure(MetalStorageConfig),
+          [EnergyMineConfig.name]: new Structure(EnergyMineConfig),
+          [MetalMineConfig.name]: new Structure(MetalMineConfig),
         }
       } else if (!newPlayer) {
-        Object.keys(userData.structure).forEach((key) => {
-          let structure =
-            userData.structure[key as keyof typeof userData.structure]
-          if (!structure) {
+        Object.keys(userData.structures).forEach((key) => {
+          const structureData = userData.structures[key]
+          if (!structureData) {
             return
           }
-          structure = new structuresMap[key as keyof typeof structuresMap](
-            structure as any,
+          userData.structures[key] = new Structure(
+            StructureConfigMap[key],
+            structureData,
           )
-          if ('update' in structure) {
-            const getUserObject = (userId: string, objectId?: string) => {
-              const structures = Object.values(userDataMap[userId].structure)
-              if (!objectId) {
-                return structures
-              }
-              return structures.filter((s) => s.id === objectId)
-            }
-            processor({ objectId: key, type: 'update' }, id, getUserObject)
-          }
-          userData.structure[key as keyof typeof userData.structure] =
-            structure as any
         })
       }
       userDataMap[id] = userData
     })
+
+    // 再更新某些组件
+    if (!newPlayer) {
+      users.forEach(({ id }) => {
+        const userData = userDataMap[id]
+        Object.keys(userData.structures).forEach((key) => {
+          const structure = userData.structures[key]
+          const mineComp = structure.components.mine as
+            | MineComponent
+            | undefined
+          if (mineComp) {
+            const intent = {
+              structureName: structure.name,
+              componentType: 'mine',
+              intentType: 'mine',
+            }
+            processor(intent, id, (userId: string) => {
+              return userDataMap[userId].structures
+            })
+          }
+        })
+      })
+    }
   }
 
   initData() {

@@ -1,7 +1,7 @@
-import { EnergyStorage, processor, structuresMap } from '../../../../core/src'
+import { processor } from '@star-angry/core'
+import { GameDB } from '@star-angry/db'
 import { ErrorCode } from '../../error/ErrorCode'
 import { GameError } from '../../error/GameError'
-import { GameDB } from '@star-angry/db'
 
 export default class StructureService {
   /**
@@ -14,13 +14,13 @@ export default class StructureService {
     if (!userData) {
       return {}
     }
-    Object.values(userData.structure).forEach(async (structure) => {
+    Object.values(userData.structures).forEach(async (structure) => {
       if ('update' in structure) {
         await StructureService.addIntent(userId, structure.id, 'update')
       }
     })
 
-    return userData.structure
+    return userData.structures
   }
 
   /**

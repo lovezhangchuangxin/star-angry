@@ -1,4 +1,5 @@
 export * from './map'
 export * from './constant'
-export * from './structure'
 export * from './processor'
+export * from './structures'
+export * from './components'
