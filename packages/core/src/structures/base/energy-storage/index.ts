@@ -1,4 +1,4 @@
-import { ResourceType } from 'packages/core/src/constant'
+import { ResourceType } from '../../../constant'
 import { StructureConfig } from '../../types'
 
 /**

@@ -1,30 +1,14 @@
-import { LevelCompDefaultConfig, LevelComponent } from './level'
-import { MineCompDefaultConfig, MineComponent } from './mine'
-import { StoreCompDefaultConfig, StoreComponent } from './store'
-
-export * from './store'
-export * from './level'
-export * from './mine'
+import { ComponentIds } from '../config'
+import { LevelCompConfig, levelGameEventHandlers } from './level'
 
 /**
- * 组件类映射
+ * 组件配置映射
  */
-export const componentClassMap = {
-  [StoreComponent.type]: StoreComponent,
-  [LevelComponent.type]: LevelComponent,
-  [MineComponent.type]: MineComponent,
+export interface ComponentConfigMap {
+  [ComponentIds.Level]: LevelCompConfig
 }
 
 /**
- * 组件类型
+ * 组件事件处理器映射
  */
-export type ComponentType = keyof typeof componentClassMap
-
-/**
- * 组件默认配置映射
- */
-export type ComponentDefaultConfigMap = {
-  [StoreComponent.type]: StoreCompDefaultConfig
-  [LevelComponent.type]: LevelCompDefaultConfig
-  [MineComponent.type]: MineCompDefaultConfig
-}
+export const componentHandlers = [levelGameEventHandlers]
