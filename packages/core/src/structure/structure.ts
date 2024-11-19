@@ -21,6 +21,14 @@ export abstract class Structure {
    */
   public abstract maxLevel: number
   /**
+   * 使用电量
+   */
+  public elecUsed: number = 0
+  /**
+   * 产生电量
+   */
+  public elecProd: number = 0
+  /**
    * 升到某级需要的资源
    */
   public abstract calcUpgradeCost(level: number): Record<ResourceType, number>

@@ -5,30 +5,42 @@ import { Structure } from './structure'
  * 能量矿场
  */
 export class EnergyMine extends Structure {
-  public id = 'energyMine'
-  public name = '能量矿场'
+  public readonly id = 'energyMine'
+  public readonly name = '能量矿场'
   public level = 0
-  public maxLevel = 100
+  public readonly maxLevel = 255
+  /**
+   * 产量
+   */
+  public output = 0
+  /**
+   * 用电量
+   */
+  public elecUsed = 0
   /**
    * 上一次的更新时间
    */
   public lastUpdate = Date.now()
 
   public constructor(
-    config: { level: number; lastUpdate: number } = {
+    config: { level: number; lastUpdate: number; elecUsed: number } = {
       level: 0,
       lastUpdate: Date.now(),
+      elecUsed: 0,
     },
   ) {
     super()
     this.level = config.level
     this.lastUpdate = config.lastUpdate
+    this.output = this.calcOutput(this.level)
+    this.elecUsed = this.electricityUsage(this.level)
   }
 
   public calcUpgradeCost(level: number): Record<ResourceType, number> {
     return {
-      [ResourceType.metal]: Math.floor(90 * Math.pow(1.3, level)),
-      [ResourceType.energy]: Math.floor(60 * Math.pow(1.3, level)),
+      [ResourceType.metal]: Math.floor(48 * Math.pow(1.5, level)),
+      [ResourceType.energy]: Math.floor(24 * Math.pow(1.5, level)),
+      [ResourceType.deuterium]: 0,
     }
   }
 
@@ -37,6 +49,8 @@ export class EnergyMine extends Structure {
       return false
     }
     this.level++
+    this.output = this.calcOutput(this.level)
+    this.elecUsed = this.electricityUsage(this.level)
     return true
   }
 
@@ -44,18 +58,27 @@ export class EnergyMine extends Structure {
    * 计算每秒的资源产量
    */
   public calcOutput(level: number): number {
-    return 100 * level
+    return Math.floor(20 * level * Math.pow(1.1, level) * (0.1 * 11))
+  }
+
+  /**
+   * 用电量
+   */
+  public electricityUsage(level: number): number {
+    return Math.ceil(10 * level * Math.pow(1.1, level) * (0.1 * 11))
   }
 
   /**
    * 更新资源
    */
-  public update(): number {
+  public update(prodLevel: number = 1): number {
     const now = Date.now()
     const deltaTime = (now - this.lastUpdate) / 1000
     this.lastUpdate = now
 
-    return Math.floor(deltaTime * this.calcOutput(this.level))
+    let prodPerTick = this.calcOutput(this.level) * prodLevel
+    if (prodPerTick < 1) prodPerTick = this.calcOutput(1)
+    return Math.floor(deltaTime * prodPerTick)
   }
 
   public toJSON(): Record<string, any> {
