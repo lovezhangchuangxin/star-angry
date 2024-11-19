@@ -1,13 +1,8 @@
-import { StructureType } from '../structure'
 import { getIntentHandler } from './intents'
 
-export const processor = (
-  intent: any,
-  userId: string,
-  getUserObject: (userId: string, objectId?: string) => StructureType[],
-) => {
+export const processor = (intent: any, userObject: any) => {
   const { objectId, type } = intent
-  const object = getUserObject(userId, objectId)[0]
+  const object = userObject[objectId]
   if (!object) {
     return false
   }
@@ -17,6 +12,5 @@ export const processor = (
     return false
   }
 
-  const planetObjects = getUserObject(userId)
-  return handler(object as any, planetObjects)
+  return handler(object as any, Object.values(userObject))
 }
