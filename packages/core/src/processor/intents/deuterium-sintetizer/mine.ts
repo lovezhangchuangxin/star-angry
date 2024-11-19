@@ -1,13 +1,16 @@
 import {
-  EnergyMine,
-  EnergyStorage,
+  DeuteriumSintetizer,
+  DeuteriumStorage,
   SolarPlant,
   StructureType,
 } from '../../../structure'
 
-export const mine = (object: EnergyMine, planetObjects: StructureType[]) => {
+export const mine = (
+  object: DeuteriumSintetizer,
+  planetObjects: StructureType[],
+) => {
   // 找到仓库
-  const storage = planetObjects.find((o) => o instanceof EnergyStorage)
+  const storage = planetObjects.find((o) => o instanceof DeuteriumStorage)
 
   if (!storage) {
     return false

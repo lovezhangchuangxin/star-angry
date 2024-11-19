@@ -4,7 +4,7 @@
       <el-card body-style="padding: 0;">
         <template #header>
           <div class="card-header">
-            <span>排行榜</span>
+            <span>电力排行榜</span>
           </div>
         </template>
         <el-table
@@ -15,7 +15,7 @@
           :height="rankHeigth"
         >
           <el-table-column prop="username" label="玩家" />
-          <el-table-column prop="score" label="积分" align="right">
+          <el-table-column prop="score" label="发电量" align="right">
             <template v-slot="scoped">
               {{ numberWithCommas(scoped.row.score) }}
             </template>
@@ -45,7 +45,7 @@ const users = ref<
 
 onMounted(async () => {
   rankHeigth.value = rankRef.value.$el.clientHeight - 60
-  UserApi.getRank()
+  UserApi.getElecRank()
     .then((res) => {
       if (res.code === 0) {
         users.value = res.data

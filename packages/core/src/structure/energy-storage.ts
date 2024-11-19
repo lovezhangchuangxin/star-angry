@@ -5,14 +5,18 @@ import { Structure } from './structure'
  * 能量仓库
  */
 export class EnergyStorage extends Structure {
-  public id = 'energyStorage'
-  public name = '能量仓库'
+  public readonly id = 'energyStorage'
+  public readonly name = '能量仓库'
   public level = 0
-  public maxLevel = 100
+  public readonly maxLevel = 255
   /**
    * 已存储资源
    */
   public store = 0
+  /**
+   * 存储限制
+   */
+  public storeLimit = 0
 
   public constructor(
     config: { level: number; store: number } = { level: 0, store: 0 },
@@ -20,12 +24,14 @@ export class EnergyStorage extends Structure {
     super()
     this.level = config.level
     this.store = config.store
+    this.storeLimit = this.calcCapacity(this.level)
   }
 
   public calcUpgradeCost(level: number): Record<ResourceType, number> {
     return {
-      [ResourceType.metal]: Math.floor(90 * Math.pow(1.3, level)),
-      [ResourceType.energy]: Math.floor(60 * Math.pow(1.3, level)),
+      [ResourceType.metal]: Math.floor(2000 * Math.pow(2, level)),
+      [ResourceType.energy]: Math.floor(1000 * Math.pow(2, level)),
+      [ResourceType.deuterium]: 0,
     }
   }
 
@@ -41,7 +47,7 @@ export class EnergyStorage extends Structure {
    * 不同等级的资源存储上限
    */
   public calcCapacity(level: number): number {
-    return 1000 * Math.pow(2, level)
+    return Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 1000
   }
 
   /**
