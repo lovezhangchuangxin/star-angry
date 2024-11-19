@@ -93,4 +93,11 @@ export default class UserController {
   static async getLevelRank(ctx: Context) {
     ctx.body = await UserService.getLevelRank()
   }
+
+  /**
+   * 获取电力排行榜
+   */
+  static async getElecRank(ctx: Context) {
+    ctx.body = await UserService.getElecRank()
+  }
 }

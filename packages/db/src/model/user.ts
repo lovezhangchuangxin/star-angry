@@ -46,4 +46,8 @@ export interface UserDataModel {
       (typeof structuresMap)[type]
     >
   }
+  /**
+   * 更新时间
+   */
+  updateTime: number
 }

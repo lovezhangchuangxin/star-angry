@@ -67,4 +67,17 @@ export class UserApi {
       }[]
     >('GET', '/user/levelRank')
   }
+
+  /**
+   * 获取电力排行榜
+   */
+  static async getElecRank() {
+    return req<
+      {
+        id: string
+        username: string
+        score: number
+      }[]
+    >('GET', '/user/elecRank')
+  }
 }

@@ -1,89 +1,139 @@
 <template>
-  <el-scrollbar
-    wrap-style="box-sizing: border-box;padding: 20px;scrollbar-width: none;"
-  >
-    <el-space wrap :size="20" :fill-ratio="23" direction="horizontal">
-      <el-card
+  <el-scrollbar class="planet-scrollbar">
+    <el-row class="planet" :gutter="20" align="top">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :md="12"
+        :lg="6"
+        :xl="4"
         v-for="structure in structures"
         :key="structure!.id"
-        class="box-card"
       >
-        <template #header>
-          <div class="card-header">
-            <el-row justify="space-between">
-              <el-text class="structure-name" size="large">
-                {{ structure.name }}
-              </el-text>
-              <el-tag type="info" color="#613e3b" effect="dark">
-                lv.{{ structure.level }}
-              </el-tag>
-            </el-row>
-          </div>
-        </template>
-        <div class="structure-body">
-          <div v-if="'calcOutput' in structure">
-            <el-row class="structure-desc">
-              产量:
-              {{ numberWithCommas(structure.calcOutput(structure.level)) }}/s
-            </el-row>
-            <el-progress
-              :text-inside="true"
-              :stroke-width="20"
-              :percentage="100"
-              :format="() => ''"
-              :indeterminate="true"
-              :duration="1"
-              color="#f7e085"
-            />
-          </div>
-          <div v-if="'store' in structure">
-            <el-row class="structure-desc">
-              储量: {{ numberWithCommas(structure.store) }} /
-              {{ numberWithCommas(structure.calcCapacity(structure.level)) }}
-            </el-row>
-            <el-progress
-              :text-inside="true"
-              :stroke-width="20"
-              :percentage="calcCapacityPercentage(structure)"
-              striped
-              striped-flow
-              :duration="30"
-              :status="calcProcessColor(structure)"
-            />
-          </div>
-          <el-row class="structure-desc">
-            <el-row>
-              <el-col :span="24">
-                <el-text type="info"> 升级需求: </el-text>
-              </el-col>
-              <el-col
-                :span="24"
-                v-for="(value, key) in structure.calcUpgradeCost(
-                  structure.level,
-                )"
-                :key="key"
-              >
-                <el-text type="info">
-                  {{ resourceName[key] }}: {{ numberWithCommas(value) }}
+        <el-card v-if="structure.id" class="box-card">
+          <template #header>
+            <div class="card-header">
+              <el-row justify="space-between">
+                <el-text class="structure-name" size="large">
+                  {{ structure.name }}
                 </el-text>
-              </el-col>
+                <el-tag type="info" color="#613e3b" effect="dark">
+                  lv.{{ structure.level }}
+                </el-tag>
+              </el-row>
+            </div>
+          </template>
+          <div class="structure-body">
+            <div v-if="structure.id === 'solarPlant'">
+              <el-row class="structure-desc">
+                产电量:
+                {{ numberWithCommas(structure.elecProd) }}
+              </el-row>
+              <el-progress
+                v-if="structure.totalProd >= structure.totalUsed"
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="calcEmptyPercentage(structure)"
+                :format="() => structure.totalProd - structure.totalUsed"
+                color="#CFCC38"
+              />
+              <el-progress
+                v-else
+                class="negative-process"
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="calcEmptyPercentage(structure)"
+                :format="() => structure.totalProd - structure.totalUsed"
+                color="#C22139"
+              />
+            </div>
+            <div v-else-if="structure.id === 'fusionPlant'">
+              <el-row class="structure-desc">
+                产电量:
+                {{ numberWithCommas(structure.elecProd) }}
+                <span class="elec-used"
+                  >(耗氢量: {{ structure.calcInput(structure.level) }})</span
+                >
+              </el-row>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="100"
+                :format="() => (structure.level ? '产电中' : '停止运转')"
+                :indeterminate="true"
+                :duration="structure.level ? 10 : 0"
+                :striped="!!structure.level"
+                :striped-flow="!!structure.level"
+                :color="structure.level ? '#87C025' : '#C22139'"
+              />
+            </div>
+            <div v-else-if="'output' in structure">
+              <el-row class="structure-desc">
+                产量:
+                {{ numberWithCommas(structure.output) }}/s
+                <span class="elec-used"
+                  >(耗电量: {{ structure.elecUsed }})</span
+                >
+              </el-row>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="100"
+                :format="() => (structure.level ? '生产中' : '停止运转')"
+                :indeterminate="true"
+                :duration="structure.level ? 10 : 0"
+                :striped="!!structure.level"
+                :striped-flow="!!structure.level"
+                :color="structure.level ? '#87C025' : '#C22139'"
+              />
+            </div>
+            <div v-else-if="'store' in structure">
+              <el-row class="structure-desc">
+                储量: {{ numberWithCommas(structure.store) }} /
+                {{ numberWithCommas(structure.storeLimit) }}
+              </el-row>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="20"
+                :percentage="calcCapacityPercentage(structure)"
+                :status="calcProcessColor(structure)"
+              />
+            </div>
+            <el-row class="structure-desc">
+              <el-row>
+                <el-col :span="24">
+                  <el-text type="info"> 升级需求: </el-text>
+                </el-col>
+                <el-col
+                  :span="24"
+                  v-for="(value, key) in structure.calcUpgradeCost(
+                    structure.level,
+                  )"
+                  :key="key"
+                >
+                  <el-text v-if="value > 0" type="info">
+                    {{ resourceName[key] }}: {{ numberWithCommas(value) }}
+                  </el-text>
+                </el-col>
+              </el-row>
             </el-row>
-          </el-row>
-        </div>
-        <template #footer>
-          <el-button
-            class="upgrade-btn"
-            @click="() => upgradeStructure(structure.id)"
-            type="primary"
-            round
-            dark
-            color="#41bfda"
-          >
-            升级
-          </el-button>
-        </template>
-      </el-card>
-    </el-space>
+          </div>
+          <template #footer>
+            <el-button
+              class="upgrade-btn"
+              @click="() => upgradeStructure(structure.id)"
+              type="primary"
+              round
+              dark
+              :disabled="!canUpgrade(structure)"
+              :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
+            >
+              升级
+            </el-button>
+          </template>
+        </el-card>
+      </el-col>
+    </el-row>
   </el-scrollbar>
 </template>
 
@@ -92,8 +142,10 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { io, Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
 import {
+  DeuteriumStorage,
   EnergyStorage,
   MetalStorage,
+  SolarPlant,
   structuresMap,
   StructureType,
 } from '@star-angry/core'
@@ -105,7 +157,28 @@ const timerId = ref<number | null>(null)
 const resourceName = {
   metal: '金属',
   energy: '能量',
+  deuterium: '重氢气',
 }
+const resourceNum = {
+  metal: 0,
+  energy: 0,
+  deuterium: 0,
+}
+// ref<Record<ResourceType, number>>({
+//   [ResourceType.metal]: 0,
+//   [ResourceType.energy]: 0,
+//   [ResourceType.deuterium]: 0,
+// })
+const structureSort = [
+  'metalStorage',
+  'metalMine',
+  'energyStorage',
+  'energyMine',
+  'deuteriumStorage',
+  'deuteriumSintetizer',
+  'solarPlant',
+  'fusionPlant',
+]
 
 onMounted(() => {
   socket.value = io('', {
@@ -151,9 +224,19 @@ const getStructures = () => {
           } else {
             data[key] = new constructor()
           }
+          if (data[key].store) {
+            if (data[key] instanceof MetalStorage)
+              resourceNum.metal = data[key].store
+            else if (data[key] instanceof EnergyStorage)
+              resourceNum.energy = data[key].store
+            else if (data[key] instanceof DeuteriumStorage)
+              resourceNum.deuterium = data[key].store
+          }
         })
 
-        structures.value = Object.values(data)
+        structures.value = Object.values(
+          structureSort.map((e) => data[e] || {}),
+        )
       } else {
         toast.error(response.msg)
       }
@@ -191,42 +274,86 @@ const addIntent = (
 
 // 储量百分比
 const calcCapacityPercentage = (
-  structure: MetalStorage | EnergyStorage,
+  structure: MetalStorage | EnergyStorage | DeuteriumStorage,
 ): number => {
-  return +(
-    (structure.store * 100) /
-    structure.calcCapacity(structure.level)
+  return +((structure.store * 100) / structure.storeLimit).toFixed(2)
+}
+
+const calcEmptyPercentage = (structure: SolarPlant): number => {
+  structure.totalProd = structure.totalProd || 0
+  if (!structure.totalProd && !structure.totalUsed) return 0
+  return +Math.min(
+    100,
+    Math.abs(
+      ((structure.totalProd - structure.totalUsed) * 100) / structure.totalProd,
+    ),
   ).toFixed(2)
 }
 
 // 储量进度条颜色
 const processStatus: string[] = ['success', '', '', 'warning', 'exception']
-const calcProcessColor = (structure: MetalStorage | EnergyStorage): string => {
+const calcProcessColor = (
+  structure: MetalStorage | EnergyStorage | DeuteriumStorage,
+): string => {
   const level = Math.ceil(
     Math.max(0, calcCapacityPercentage(structure) - 60) / 10,
   )
   return processStatus[level]
 }
+
+// 能否升级
+const canUpgrade = (structure: StructureType): boolean => {
+  const upgradeCost = structure.calcUpgradeCost(structure.level)
+  if (upgradeCost.metal > resourceNum.metal) return false
+  if (upgradeCost.energy > resourceNum.energy) return false
+  if (upgradeCost.deuterium > resourceNum.deuterium) return false
+  return true
+}
 </script>
 
 <style scoped lang="less">
-.el-space {
-  height: 100%;
+.planet {
+  padding: 20px 40px;
+  overflow: auto;
+  scrollbar-width: none;
+
   .box-card {
-    min-width: 300px;
+    margin: 10px 0;
     .structure-name {
       color: #cbc0aa;
     }
 
     .structure-body {
+      height: 150px;
       .structure-desc {
+        align-items: baseline;
         margin: 10px 0;
+        .elec-used {
+          margin-left: 10px;
+          font-size: 12px;
+        }
       }
     }
 
     .upgrade-btn {
       width: 100%;
     }
+  }
+}
+</style>
+<style lang="less">
+.el-scrollbar.planet-scrollbar {
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+    .el-scrollbar__view {
+      overflow-x: hidden;
+    }
+  }
+}
+.el-progress.negative-process {
+  .el-progress-bar__inner {
+    left: auto;
+    right: 0;
   }
 }
 </style>

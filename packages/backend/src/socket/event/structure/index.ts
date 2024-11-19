@@ -27,6 +27,7 @@ export const structureEventHandler = (socket: Socket, io: Server) => {
       const data = await StructureService.addIntent(userId, id, type)
       return callback(Result.success(data))
     } catch (error: unknown) {
+      console.error(error)
       if (error instanceof GameError) {
         return callback(Result.error(error.errorCode))
       }
