@@ -47,16 +47,16 @@ const handleGo = (path: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  // position: fixed;
+  // top: 0;
+  // left: 0;
+  // right: 0;
   padding: 0 20px;
   height: 50px;
   background-color: #161a2a;
   color: #e9e9e9;
   font-size: 16px;
-  z-index: 100;
+  z-index: 1000;
 
   & > div {
     display: flex;

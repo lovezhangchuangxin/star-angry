@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <NavHeader />
+    <!-- <NavHeader /> -->
     <router-view></router-view>
   </div>
 </template>
@@ -10,7 +10,7 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { UserApi } from '@star-angry/api'
 import { useUserStore } from '@/store'
-import NavHeader from '@/components/navbar/NavHeader.vue'
+// import NavHeader from '@/layouts/components/NavHeader.vue'
 
 const route = useRoute()
 const router = useRouter()

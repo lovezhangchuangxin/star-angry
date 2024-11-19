@@ -313,8 +313,7 @@ const canUpgrade = (structure: StructureType): boolean => {
 
 <style scoped lang="less">
 .planet {
-  padding: 40px;
-  margin-top: 50px;
+  padding: 20px 40px;
   overflow: auto;
   scrollbar-width: none;
 
