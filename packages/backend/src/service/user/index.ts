@@ -190,8 +190,8 @@ export default class UserService {
         const structureMap =
           (await StructureService.getStructures(user.id)) || {}
         const solarPlant = structureMap.solarPlant
-        const store =
-          (solarPlant?.totalProd || 0) - (solarPlant?.totalUsed || 0)
+        const fusionPlant = structureMap.fusionPlant
+        const store = (solarPlant?.elecProd || 0) + (fusionPlant?.elecProd || 0)
         return {
           id: user.id,
           username: user.username,

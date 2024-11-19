@@ -29,6 +29,16 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/user/RankPage.vue'),
   },
   {
+    path: '/levelRank',
+    name: 'LevelRank',
+    component: () => import('@/views/user/LevelRankPage.vue'),
+  },
+  {
+    path: '/elecRank',
+    name: 'ElecRank',
+    component: () => import('@/views/user/ElecRankPage.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404/NotFoundPage.vue'),
