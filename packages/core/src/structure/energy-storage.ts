@@ -47,7 +47,7 @@ export class EnergyStorage extends Structure {
    * 不同等级的资源存储上限
    */
   public calcCapacity(level: number): number {
-    return Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000
+    return Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 1000
   }
 
   /**

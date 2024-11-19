@@ -62,7 +62,7 @@ export class FusionPlant extends Structure {
    * 计算每秒电能产量
    */
   public calcOutput(level: number): number {
-    return Math.floor(30 * level * Math.pow(1.05, level) * (0.1 * 11))
+    return Math.floor(30 * level * Math.pow(1.05, level) * (0.1 * 11)) * 10
   }
 
   /**

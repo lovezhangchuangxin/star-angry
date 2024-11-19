@@ -34,7 +34,7 @@
                 :text-inside="true"
                 :stroke-width="20"
                 :percentage="calcEmptyPercentage(structure)"
-                :format="() => calcEmptyPercentage(structure)"
+                :format="() => structure.totalProd - structure.totalUsed"
                 color="#CFCC38"
               />
               <el-progress
