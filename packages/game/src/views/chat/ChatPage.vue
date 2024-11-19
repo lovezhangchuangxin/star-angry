@@ -139,7 +139,7 @@ const handleSendMessage = (message: string, ok: () => void) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100%;
 
   .content {
     display: flex;
@@ -160,9 +160,12 @@ const handleSendMessage = (message: string, ok: () => void) => {
 
 @media (max-width: 700px) {
   .chat {
+    justify-content: start;
+    align-items: start;
     .content {
       width: 100%;
-      height: calc(100% - 100px);
+      // height: calc(100% - 100px);
+      height: 100%;
       min-width: 0;
       border-radius: 0;
       box-shadow: none;

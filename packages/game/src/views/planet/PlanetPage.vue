@@ -1,6 +1,8 @@
 <template>
-  <div class="planet">
-    <el-space fill wrap :size="20" :fill-ratio="23" direction="horizontal">
+  <el-scrollbar
+    wrap-style="box-sizing: border-box;padding: 20px;scrollbar-width: none;"
+  >
+    <el-space wrap :size="20" :fill-ratio="23" direction="horizontal">
       <el-card
         v-for="structure in structures"
         :key="structure!.id"
@@ -82,7 +84,7 @@
         </template>
       </el-card>
     </el-space>
-  </div>
+  </el-scrollbar>
 </template>
 
 <script setup lang="ts">
@@ -208,33 +210,22 @@ const calcProcessColor = (structure: MetalStorage | EnergyStorage): string => {
 </script>
 
 <style scoped lang="less">
-.planet {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100% - 100px);
-  padding: 20px;
-  margin-top: 50px;
-  overflow: auto;
-  scrollbar-width: none;
+.el-space {
+  height: 100%;
+  .box-card {
+    min-width: 300px;
+    .structure-name {
+      color: #cbc0aa;
+    }
 
-  .el-space {
-    height: 100%;
-    .box-card {
-      min-width: 300px;
-      .structure-name {
-        color: #cbc0aa;
+    .structure-body {
+      .structure-desc {
+        margin: 10px 0;
       }
+    }
 
-      .structure-body {
-        .structure-desc {
-          margin: 10px 0;
-        }
-      }
-
-      .upgrade-btn {
-        width: 100%;
-      }
+    .upgrade-btn {
+      width: 100%;
     }
   }
 }

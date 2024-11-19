@@ -1,9 +1,9 @@
 <template>
   <!-- 聊天窗 -->
   <div class="chat-window">
-    <p class="title" :style="toName ? 'border-bottom: 1px solid #303543;' : ''">
+    <!-- <p class="title" :style="toName ? 'border-bottom: 1px solid #303543;' : ''">
       {{ toName }}
-    </p>
+    </p> -->
     <!-- 内容区 -->
     <div class="content" ref="contentRef">
       <div

@@ -106,7 +106,7 @@ onMounted(async () => {
 <style scoped lang="less">
 .rank {
   height: 100%;
-  padding-top: 50px;
+  // padding-top: 50px;
 
   .rank-box {
     margin: 20px 0;
