@@ -125,7 +125,8 @@
               type="primary"
               round
               dark
-              color="#41bfda"
+              :disabled="!canUpgrade(structure)"
+              :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
             >
               升级
             </el-button>
@@ -158,6 +159,16 @@ const resourceName = {
   energy: '能量',
   deuterium: '重氢气',
 }
+const resourceNum = {
+  metal: 0,
+  energy: 0,
+  deuterium: 0,
+}
+// ref<Record<ResourceType, number>>({
+//   [ResourceType.metal]: 0,
+//   [ResourceType.energy]: 0,
+//   [ResourceType.deuterium]: 0,
+// })
 const structureSort = [
   'metalStorage',
   'metalMine',
@@ -212,6 +223,14 @@ const getStructures = () => {
             data[key] = new constructor(data[key])
           } else {
             data[key] = new constructor()
+          }
+          if (data[key].store) {
+            if (data[key] instanceof MetalStorage)
+              resourceNum.metal = data[key].store
+            else if (data[key] instanceof EnergyStorage)
+              resourceNum.energy = data[key].store
+            else if (data[key] instanceof DeuteriumStorage)
+              resourceNum.deuterium = data[key].store
           }
         })
 
@@ -280,6 +299,15 @@ const calcProcessColor = (
     Math.max(0, calcCapacityPercentage(structure) - 60) / 10,
   )
   return processStatus[level]
+}
+
+// 能否升级
+const canUpgrade = (structure: StructureType): boolean => {
+  const upgradeCost = structure.calcUpgradeCost(structure.level)
+  if (upgradeCost.metal > resourceNum.metal) return false
+  if (upgradeCost.energy > resourceNum.energy) return false
+  if (upgradeCost.deuterium > resourceNum.deuterium) return false
+  return true
 }
 </script>
 
