@@ -2,11 +2,11 @@ import { ResourceType } from '../constant/res'
 import { Structure } from './structure'
 
 /**
- * 金属矿场
+ * 重氢精炼厂
  */
-export class MetalMine extends Structure {
-  public readonly id = 'metalMine'
-  public readonly name = '金属矿场'
+export class DeuteriumSintetizer extends Structure {
+  public readonly id = 'deuteriumSintetizer'
+  public readonly name = '重氢精炼厂'
   public level = 0
   public readonly maxLevel = 255
   /**
@@ -17,6 +17,10 @@ export class MetalMine extends Structure {
    * 用电量
    */
   public elecUsed = 0
+  /**
+   * 热量 (跟星球温度有关)
+   */
+  public buildTemp = 30
   /**
    * 上一次的更新时间
    */
@@ -38,8 +42,8 @@ export class MetalMine extends Structure {
 
   public calcUpgradeCost(level: number): Record<ResourceType, number> {
     return {
-      [ResourceType.metal]: Math.floor(60 * Math.pow(1.5, level)),
-      [ResourceType.energy]: Math.floor(15 * Math.pow(1.5, level)),
+      [ResourceType.metal]: Math.floor(225 * Math.pow(1.5, level)),
+      [ResourceType.energy]: Math.floor(75 * Math.pow(1.5, level)),
       [ResourceType.deuterium]: 0,
     }
   }
@@ -58,14 +62,20 @@ export class MetalMine extends Structure {
    * 计算每秒的资源产量
    */
   public calcOutput(level: number): number {
-    return Math.floor(30 * level * Math.pow(1.1, level) * (0.1 * 11))
+    return Math.floor(
+      10 *
+        level *
+        Math.pow(1.1, level) *
+        (-0.002 * this.buildTemp + 1.28) *
+        (0.1 * 11),
+    )
   }
 
   /**
    * 用电量
    */
   public electricityUsage(level: number): number {
-    return Math.ceil(10 * level * Math.pow(1.1, level) * (0.1 * 11))
+    return Math.ceil(30 * level * Math.pow(1.1, level) * (0.1 * 11))
   }
 
   /**
@@ -78,6 +88,7 @@ export class MetalMine extends Structure {
 
     let prodPerTick = this.calcOutput(this.level) * prodLevel
     if (prodPerTick < 1) prodPerTick = this.calcOutput(1)
+
     return Math.floor(deltaTime * prodPerTick)
   }
 

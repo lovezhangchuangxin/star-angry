@@ -1,12 +1,15 @@
 import {
-  EnergyMine,
+  DeuteriumSintetizer,
   EnergyStorage,
   MetalStorage,
   SolarPlant,
   StructureType,
 } from '../../../structure'
 
-export const upgrade = (object: EnergyMine, planetObjects: StructureType[]) => {
+export const upgrade = (
+  object: DeuteriumSintetizer,
+  planetObjects: StructureType[],
+) => {
   // 找到仓库
   const energyStorage = planetObjects.find((o) => o instanceof EnergyStorage)
   const metalStorage = planetObjects.find((o) => o instanceof MetalStorage)

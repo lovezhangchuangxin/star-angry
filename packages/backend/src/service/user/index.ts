@@ -134,14 +134,10 @@ export default class UserService {
    */
   static async getRank() {
     const data = await GameDB.getDB().getData()
-    const users = data.user
-      .map((user) => {
-        const structureMap = data.userData[user.id]?.structure || {}
-        Object.values(structureMap).forEach((structure) => {
-          if ('update' in structure) {
-            StructureService.addIntent(user.id, structure.id, 'update')
-          }
-        })
+    let users = await Promise.all(
+      data.user.map(async (user) => {
+        const structureMap =
+          (await StructureService.getStructures(user.id)) || {}
         const energyStorage = structureMap.energyStorage
         const metalStorage = structureMap.metalStorage
         const store = (energyStorage?.store || 0) + (metalStorage?.store || 0)
@@ -150,8 +146,9 @@ export default class UserService {
           username: user.username,
           score: store,
         }
-      })
-      .sort((a, b) => b.score - a.score)
+      }),
+    )
+    users = users.sort((a, b) => b.score - a.score)
     return Result.success(users)
   }
 
@@ -160,14 +157,10 @@ export default class UserService {
    */
   static async getLevelRank() {
     const data = await GameDB.getDB().getData()
-    const users = data.user
-      .map((user) => {
-        const structureMap = data.userData[user.id]?.structure || {}
-        Object.values(structureMap).forEach((structure) => {
-          if ('update' in structure) {
-            StructureService.addIntent(user.id, structure.id, 'update')
-          }
-        })
+    let users = await Promise.all(
+      data.user.map(async (user) => {
+        const structureMap =
+          (await StructureService.getStructures(user.id)) || {}
         let totelLevel = 0
         let maxLevel = 0
         Object.values(structureMap).forEach((structure) => {
@@ -180,8 +173,32 @@ export default class UserService {
           totalLevel: totelLevel,
           maxLevel: maxLevel,
         }
-      })
-      .sort((a, b) => b.totalLevel - a.totalLevel)
+      }),
+    )
+    users = users.sort((a, b) => b.totalLevel - a.totalLevel)
+    return Result.success(users)
+  }
+
+  /**
+   * 获取排行榜
+   */
+  static async getElecRank() {
+    const data = await GameDB.getDB().getData()
+    let users = await Promise.all(
+      data.user.map(async (user) => {
+        const structureMap =
+          (await StructureService.getStructures(user.id)) || {}
+        const solarPlant = structureMap.solarPlant
+        const store =
+          (solarPlant?.totalProd || 0) - (solarPlant?.totalUsed || 0)
+        return {
+          id: user.id,
+          username: user.username,
+          score: store,
+        }
+      }),
+    )
+    users = users.sort((a, b) => b.score - a.score)
     return Result.success(users)
   }
 }

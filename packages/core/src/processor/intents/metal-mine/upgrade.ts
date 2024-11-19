@@ -2,6 +2,7 @@ import {
   EnergyStorage,
   MetalMine,
   MetalStorage,
+  SolarPlant,
   StructureType,
 } from '../../../structure'
 
@@ -27,6 +28,10 @@ export const upgrade = (object: MetalMine, planetObjects: StructureType[]) => {
   if (object.upgrade()) {
     energyStorage.addStore(-cost.energy)
     metalStorage.addStore(-cost.metal)
+
+    // 计算用电量
+    const solarPlant = planetObjects.find((o) => o instanceof SolarPlant)
+    solarPlant?.calcUsed(planetObjects)
     return true
   }
 

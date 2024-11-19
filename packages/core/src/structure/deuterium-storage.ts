@@ -2,13 +2,13 @@ import { ResourceType } from '../constant/res'
 import { Structure } from './structure'
 
 /**
- * 金属仓库
+ * 重氢仓库
  */
-export class MetalStorage extends Structure {
-  public readonly id = 'metalStorage'
-  public readonly name = '金属仓库'
+export class DeuteriumStorage extends Structure {
+  public readonly id = 'deuteriumStorage'
+  public readonly name = '重氢仓库'
   public level = 0
-  public readonly maxLevel = 100
+  public readonly maxLevel = 255
   /**
    * 已存储资源
    */
@@ -30,7 +30,7 @@ export class MetalStorage extends Structure {
   public calcUpgradeCost(level: number): Record<ResourceType, number> {
     return {
       [ResourceType.metal]: Math.floor(2000 * Math.pow(2, level)),
-      [ResourceType.energy]: 0,
+      [ResourceType.energy]: Math.floor(2000 * Math.pow(2, level)),
       [ResourceType.deuterium]: 0,
     }
   }
