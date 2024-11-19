@@ -31,7 +31,6 @@ export function useVerification(initTime = 60) {
     const res = await UserApi.sendVerification(email)
 
     if (res.code === 0) {
-      if (res.data?.verification) alert(res.data?.verification)
       message.success('请求已发送')
     } else if (res.code === 1010) {
       message.success('验证码已发送')
