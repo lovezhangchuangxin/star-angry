@@ -180,7 +180,7 @@ const registerForm = reactive({
   password: '',
   password2: '',
   email: '',
-  verification: '',
+  verification: '888888',
 })
 
 const validatePassword2 = (
