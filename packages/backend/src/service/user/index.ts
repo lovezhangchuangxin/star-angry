@@ -48,6 +48,8 @@ export default class UserService {
       role: Role.USER,
       createTime: Date.now(),
       updateTime: Date.now(),
+      activeTime: Date.now(),
+      lastOnlineTime: Date.now(),
     }
     const { password: _, ...safeUserInfo } = userInfo
     data.user.push(userInfo)

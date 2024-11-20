@@ -3,6 +3,7 @@ import { Result } from '../../../utils/result'
 import { ErrorCode } from '../../../error/ErrorCode'
 import StructureService from '../../../service/structure'
 import { GameError } from '../../../error/GameError'
+import UserService from '../../../service/user'
 
 export const structureEventHandler = (socket: Socket, io: Server) => {
   // 获取自己的所有建筑
@@ -13,6 +14,7 @@ export const structureEventHandler = (socket: Socket, io: Server) => {
     }
 
     const data = await StructureService.getStructures(userId)
+    UserService.onlineUser(userId)
     return callback(Result.success(data))
   })
 
@@ -25,6 +27,7 @@ export const structureEventHandler = (socket: Socket, io: Server) => {
 
     try {
       const data = await StructureService.addIntent(userId, id, type)
+      UserService.activeUser(userId)
       return callback(Result.success(data))
     } catch (error: unknown) {
       console.error(error)
