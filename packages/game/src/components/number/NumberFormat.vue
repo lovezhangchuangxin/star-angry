@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { numberWithCommas } from '@/utils/number'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const { value = 0 } = defineProps({
   value: Number,
@@ -35,16 +35,30 @@ const unitName = [
   'AH',
 ]
 
-onMounted(() => {
+const format = (value: number = 0) => {
   let tempValue = value
   const bit = Math.log10(tempValue)
   const hideUnit = Math.ceil((bit - 6) / 3)
   if (hideUnit > 0) {
     unit.value = unitName[hideUnit]
     tempValue = Math.floor(tempValue / Math.pow(10, hideUnit * 3))
+  } else {
+    unit.value = unitName[0]
   }
   valueFullFormat.value = numberWithCommas(value)
   valueFormat.value = numberWithCommas(tempValue)
+}
+
+onMounted(() => {
+  format(value)
 })
+
+watch(
+  () => value,
+  (newData: number) => {
+    format(newData)
+  },
+  { immediate: true },
+)
 </script>
 <style scoped lang="less"></style>
