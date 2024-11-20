@@ -52,16 +52,6 @@ const data: NavSideDataItem[] = [
     icon: Memo,
     path: '/rank',
   },
-  {
-    title: '等级排行榜',
-    icon: Memo,
-    path: '/levelRank',
-  },
-  {
-    title: '电力排行榜',
-    icon: Memo,
-    path: '/elecRank',
-  },
 ]
 
 onMounted(() => {

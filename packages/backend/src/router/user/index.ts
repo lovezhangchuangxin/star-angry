@@ -13,8 +13,4 @@ userRouter.get('/user/info', UserController.getUserInfo)
 
 userRouter.get('/user/rank', UserController.getRank)
 
-userRouter.get('/user/levelRank', UserController.getLevelRank)
-
-userRouter.get('/user/elecRank', UserController.getElecRank)
-
 export default userRouter
