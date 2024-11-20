@@ -29,6 +29,14 @@ export interface UserModel {
    * 更新时间
    */
   updateTime: number
+  /**
+   * 活跃时间
+   */
+  activeTime: number
+  /**
+   * 最后在线时间
+   */
+  lastOnlineTime: number
 }
 
 export enum Role {
