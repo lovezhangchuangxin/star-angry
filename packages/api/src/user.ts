@@ -49,35 +49,13 @@ export class UserApi {
       {
         id: string
         username: string
-        score: number
-      }[]
-    >('GET', '/user/rank')
-  }
-
-  /**
-   * 获取等级排行榜
-   */
-  static async getLevelRank() {
-    return req<
-      {
-        id: string
-        username: string
+        lastOnlineTime: number
+        activeTime: number
+        store: number
         totalLevel: number
         maxLevel: number
+        elecProd: number
       }[]
-    >('GET', '/user/levelRank')
-  }
-
-  /**
-   * 获取电力排行榜
-   */
-  static async getElecRank() {
-    return req<
-      {
-        id: string
-        username: string
-        score: number
-      }[]
-    >('GET', '/user/elecRank')
+    >('GET', '/user/rank')
   }
 }
