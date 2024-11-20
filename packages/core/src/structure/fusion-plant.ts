@@ -6,7 +6,7 @@ import { Structure } from './structure'
  */
 export class FusionPlant extends Structure {
   public readonly id = 'fusionPlant'
-  public readonly name = '聚变反应堆'
+  public readonly name = '行星发动机'
   public level = 0
   public readonly maxLevel = 255
   /**
@@ -62,7 +62,7 @@ export class FusionPlant extends Structure {
    * 计算每秒电能产量
    */
   public calcOutput(level: number): number {
-    return Math.floor(30 * level * Math.pow(1.05, level) * (0.1 * 11)) * 10
+    return Math.floor(30 * level * Math.pow(1.05, level) * (0.1 * 11)) * 100
   }
 
   /**
