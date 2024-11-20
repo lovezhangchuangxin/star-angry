@@ -27,7 +27,7 @@
             <div v-if="structure.id === 'solarPlant'">
               <el-row class="structure-desc">
                 产电量:
-                {{ numberWithCommas(structure.elecProd) }}
+                <NumberFormat :value="structure.elecProd" />
               </el-row>
               <el-progress
                 v-if="structure.totalProd >= structure.totalUsed"
@@ -50,7 +50,7 @@
             <div v-else-if="structure.id === 'fusionPlant'">
               <el-row class="structure-desc">
                 产电量:
-                {{ numberWithCommas(structure.elecProd) }}
+                <NumberFormat :value="structure.elecProd" />
                 <span class="elec-used"
                   >(耗氢量: {{ structure.calcInput(structure.level) }})</span
                 >
@@ -70,7 +70,7 @@
             <div v-else-if="'output' in structure">
               <el-row class="structure-desc">
                 产量:
-                {{ numberWithCommas(structure.output) }}/s
+                <NumberFormat :value="structure.output" />/s
                 <span class="elec-used"
                   >(耗电量: {{ structure.elecUsed }})</span
                 >
@@ -89,8 +89,8 @@
             </div>
             <div v-else-if="'store' in structure">
               <el-row class="structure-desc">
-                储量: {{ numberWithCommas(structure.store) }} /
-                {{ numberWithCommas(structure.storeLimit) }}
+                储量: <NumberFormat :value="structure.store" /> /
+                <NumberFormat :value="structure.storeLimit" />
               </el-row>
               <el-progress
                 :text-inside="true"
@@ -112,7 +112,7 @@
                   :key="key"
                 >
                   <el-text v-if="value > 0" type="info">
-                    {{ resourceName[key] }}: {{ numberWithCommas(value) }}
+                    {{ resourceName[key] }}: <NumberFormat :value="value" />
                   </el-text>
                 </el-col>
               </el-row>
@@ -149,7 +149,7 @@ import {
   structuresMap,
   StructureType,
 } from '@star-angry/core'
-import { numberWithCommas } from '@/utils/number'
+import NumberFormat from '@/components/number/NumberFormat.vue'
 
 const socket = ref<Socket | null>(null)
 const structures = ref<StructureType[]>([])

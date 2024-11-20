@@ -23,10 +23,12 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     GameMap: typeof import('./src/components/gameMap/index.vue')['default']
     MdViewer: typeof import('./src/components/md-viewer/MdViewer.vue')['default']
     NavHeader: typeof import('./src/components/navbar/NavHeader.vue')['default']
     NavSide: typeof import('./src/components/navbar/NavSide.vue')['default']
+    NumberFormat: typeof import('./src/components/number/NumberFormat.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
