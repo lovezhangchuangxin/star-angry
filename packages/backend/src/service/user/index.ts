@@ -11,6 +11,7 @@ import StructureService from '../structure'
 
 export default class UserService {
   static verificationCache = new TimeCache()
+  static userModelCache = new Map<string, UserModel>()
 
   /**
    * 注册
@@ -48,6 +49,8 @@ export default class UserService {
       role: Role.USER,
       createTime: Date.now(),
       updateTime: Date.now(),
+      activeTime: Date.now(),
+      lastOnlineTime: Date.now(),
     }
     const { password: _, ...safeUserInfo } = userInfo
     data.user.push(userInfo)
@@ -139,67 +142,69 @@ export default class UserService {
       data.user.map(async (user) => {
         const structureMap =
           (await StructureService.getStructures(user.id)) || {}
+        let totalLevel = 0
+        let maxLevel = 0
         const energyStorage = structureMap.energyStorage
         const metalStorage = structureMap.metalStorage
-        const store = (energyStorage?.store || 0) + (metalStorage?.store || 0)
-        return {
-          id: user.id,
-          username: user.username,
-          score: store,
-        }
-      }),
-    )
-    users = users.sort((a, b) => b.score - a.score)
-    return Result.success(users)
-  }
-
-  /**
-   * 获取等级排行榜
-   */
-  static async getLevelRank() {
-    const data = await GameDB.getDB().getData()
-    let users = await Promise.all(
-      data.user.map(async (user) => {
-        const structureMap =
-          (await StructureService.getStructures(user.id)) || {}
-        let totelLevel = 0
-        let maxLevel = 0
+        const deuteriumStorage = structureMap.deuteriumStorage
+        const solarPlant = structureMap.solarPlant
+        const fusionPlant = structureMap.fusionPlant
+        const store =
+          (energyStorage?.store || 0) +
+          (metalStorage?.store || 0) +
+          (deuteriumStorage?.store || 0)
+        const elecProd =
+          (solarPlant?.elecProd || 0) + (fusionPlant?.elecProd || 0)
         Object.values(structureMap).forEach((structure) => {
-          totelLevel += structure.level || 0
+          totalLevel += structure.level || 0
           maxLevel = Math.max(maxLevel, structure.level || 0)
         })
         return {
           id: user.id,
           username: user.username,
-          totalLevel: totelLevel,
-          maxLevel: maxLevel,
+          lastOnlineTime: user.lastOnlineTime,
+          activeTime: user.activeTime,
+          store,
+          totalLevel,
+          maxLevel,
+          elecProd,
         }
       }),
     )
-    users = users.sort((a, b) => b.totalLevel - a.totalLevel)
+    users = users.sort((a, b) => b.elecProd - a.elecProd)
     return Result.success(users)
   }
 
   /**
-   * 获取排行榜
+   * 缓存 id 取用户信息
    */
-  static async getElecRank() {
+  private static async getUserById(userId: string) {
     const data = await GameDB.getDB().getData()
-    let users = await Promise.all(
-      data.user.map(async (user) => {
-        const structureMap =
-          (await StructureService.getStructures(user.id)) || {}
-        const solarPlant = structureMap.solarPlant
-        const fusionPlant = structureMap.fusionPlant
-        const store = (solarPlant?.elecProd || 0) + (fusionPlant?.elecProd || 0)
-        return {
-          id: user.id,
-          username: user.username,
-          score: store,
-        }
-      }),
-    )
-    users = users.sort((a, b) => b.score - a.score)
-    return Result.success(users)
+    let user = UserService.userModelCache.get(userId)
+    if (!user) {
+      user = data.user.find((item) => item.id === userId)
+      if (user) UserService.userModelCache.set(userId, user)
+    }
+    return user
+  }
+
+  /**
+   * 用户活跃
+   */
+  static async activeUser(userId: string) {
+    const user = await UserService.getUserById(userId)
+    if (user) {
+      user.activeTime = Date.now()
+    }
+  }
+
+  /**
+   * 用户在线
+   */
+  static async onlineUser(userId: string) {
+    const user = await UserService.getUserById(userId)
+    if (user) {
+      user.lastOnlineTime = Date.now()
+    }
   }
 }
