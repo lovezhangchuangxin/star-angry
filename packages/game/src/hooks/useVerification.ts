@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { UserApi } from '@star-angry/api'
+import { UserApi } from '@/api'
 import { Validator } from '@star-angry/shared'
 import { message } from '@/utils/message'
 

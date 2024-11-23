@@ -23,7 +23,7 @@ import { io, Socket } from 'socket.io-client'
 import PersonList from './PersonList.vue'
 import ChatWindow from './ChatWindow.vue'
 import { message as toast } from '@/utils/message'
-import { ResponseData } from '@star-angry/api'
+import { ResponseData } from '@/api'
 import { MessageInfo } from '@star-angry/db/src/model/message'
 import { useUserStore } from '@/store'
 

@@ -143,7 +143,7 @@ import { reactive, ref } from 'vue'
 import { message } from '@/utils/message'
 import { useState } from '@/hooks/useState'
 import { useVerification } from '@/hooks/useVerification'
-import { UserApi } from '@star-angry/api'
+import { UserApi } from '@/api'
 import {
   Validator,
   ValidatorCallBack,

@@ -10,8 +10,9 @@
       <span
         style="margin-left: 100px; cursor: pointer"
         @click="router.push('/planet')"
-        >我的星球</span
       >
+        我的星球
+      </span>
     </div>
 
     <div class="right">

@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/store'
-import GameMap from '@/components/gameMap/index.vue'
+import GameMap from '@/components/game-map/index.vue'
 
 const userStore = useUserStore()
 console.log(userStore.username)

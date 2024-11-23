@@ -48,7 +48,6 @@ const render = throttle(
       stage.width(),
       stage.height(),
     ]
-    console.log(x, y, width, height)
 
     const galaxies = universe.getGalaxies(x, y, x + width, y + height)
     galaxies.forEach((galaxy) => {

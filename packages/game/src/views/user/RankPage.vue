@@ -86,7 +86,7 @@
 import NumberFormat from '@/components/number/NumberFormat.vue'
 import { message } from '@/utils/message'
 import { numberWithCommas, timeFromNow } from '@/utils/number'
-import { UserApi } from '@star-angry/api'
+import { UserApi } from '@/api'
 import { onMounted, ref } from 'vue'
 
 const rankRef = ref()

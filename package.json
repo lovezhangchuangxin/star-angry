@@ -27,7 +27,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@star-angry/api": "workspace:^",
     "@star-angry/core": "workspace:^",
     "@star-angry/db": "workspace:^",
     "@star-angry/shared": "workspace:^",

@@ -10,5 +10,5 @@ defineOptions({
   components: { Default },
 })
 
-let layoutMode = ref('default')
+const layoutMode = ref('default')
 </script>

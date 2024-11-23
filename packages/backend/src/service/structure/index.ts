@@ -53,8 +53,6 @@ export default class StructureService {
         console.log('终止运行')
         return
       }
-      const startTime = performance.now()
-
       const data = await GameDB.getDB().getData()
       data.user.forEach(({ id }) => {
         const userData = data.userData[id]
@@ -84,13 +82,6 @@ export default class StructureService {
           userData.updateTime = Date.now()
         }
       })
-
-      console.log(
-        'Tick:',
-        performance.now() - startTime,
-        'ms, user: ',
-        Object.keys(data.user).length,
-      )
     }, 1000)
     StructureService.intentTimer = timer
   }

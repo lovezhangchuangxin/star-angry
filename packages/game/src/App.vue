@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { UserApi } from '@star-angry/api'
+import { UserApi } from '@/api'
 import { useUserStore } from '@/store'
 // import NavHeader from '@/layouts/components/NavHeader.vue'
 
