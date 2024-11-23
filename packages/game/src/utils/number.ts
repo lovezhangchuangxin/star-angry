@@ -1,8 +1,10 @@
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
+
 dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
+
 export const timeFromNow = (timestamp: number): string => {
   return dayjs(timestamp).fromNow()
 }

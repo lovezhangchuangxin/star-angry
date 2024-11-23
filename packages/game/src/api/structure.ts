@@ -3,7 +3,7 @@ import { req } from './req'
 
 export class StructureApi {
   /**
-   * 获取我的建组
+   * 获取我的建筑
    */
   static async getStructures() {
     return req<{

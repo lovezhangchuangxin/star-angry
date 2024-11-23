@@ -11,14 +11,17 @@
 
 <script setup lang="ts">
 import { numberWithCommas } from '@/utils/number'
-import { onMounted, ref, watch } from 'vue'
+import { ref, toRefs, watchEffect } from 'vue'
 
-const { value = 0 } = defineProps({
-  value: Number,
-})
-const unit = ref<string>('')
-const valueFormat = ref<string>('0')
-const valueFullFormat = ref<string>('0')
+interface NumberFormatProps {
+  value?: number
+}
+
+const props = defineProps<NumberFormatProps>()
+const { value } = toRefs(props)
+const unit = ref('')
+const valueFormat = ref('0')
+const valueFullFormat = ref('0')
 const unitName = [
   '',
   'K',
@@ -35,7 +38,11 @@ const unitName = [
   'AH',
 ]
 
-const format = (value: number = 0) => {
+watchEffect(() => {
+  format(value.value)
+})
+
+function format(value: number = 0) {
   let tempValue = value
   const bit = Math.log10(tempValue)
   const hideUnit = Math.ceil((bit - 6) / 3)
@@ -48,17 +55,6 @@ const format = (value: number = 0) => {
   valueFullFormat.value = numberWithCommas(value)
   valueFormat.value = numberWithCommas(tempValue)
 }
-
-onMounted(() => {
-  format(value)
-})
-
-watch(
-  () => value,
-  (newData: number) => {
-    format(newData)
-  },
-  { immediate: true },
-)
 </script>
+
 <style scoped lang="less"></style>
