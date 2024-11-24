@@ -15,7 +15,7 @@ export const gameEventHandler = (socket: Socket, io: Server) => {
 
     try {
       const data = await GameService.getMyData(userId)
-      UserService.activeUser(userId)
+      UserService.onlineUser(userId)
       return callback(Result.success(data))
     } catch (error: unknown) {
       console.error(error)
