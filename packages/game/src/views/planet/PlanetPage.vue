@@ -8,14 +8,14 @@
         :lg="6"
         :xl="4"
         v-for="structure in structures"
-        :key="structure!.id"
+        :key="structure.id"
       >
-        <el-card v-if="structure.id" class="box-card">
+        <el-card class="box-card">
           <template #header>
             <div class="card-header">
               <el-row justify="space-between">
                 <el-text class="structure-name" size="large">
-                  {{ structure.name }}
+                  {{ StructureConfigs[structure.id].name }}
                 </el-text>
                 <el-tag type="info" color="#613e3b" effect="dark">
                   lv.{{ structure.level }}
@@ -23,18 +23,21 @@
               </el-row>
             </div>
           </template>
+
           <div class="structure-body">
             <div v-if="structure.id === 'solarPlant'">
               <el-row class="structure-desc">
                 产电量:
-                <NumberFormat :value="structure.elecProd" />
+                <NumberFormat
+                  :value="(structure as ProducerData).produceSpeed.electricity"
+                />
               </el-row>
               <el-progress
-                v-if="structure.totalProd >= structure.totalUsed"
+                v-if="electricityTotal >= electricityUsed"
                 :text-inside="true"
                 :stroke-width="20"
-                :percentage="calcEmptyPercentage(structure)"
-                :format="() => structure.totalProd - structure.totalUsed"
+                :percentage="calcEmptyPercentage()"
+                :format="() => electricityTotal - electricityUsed"
                 color="#CFCC38"
               />
               <el-progress
@@ -42,18 +45,21 @@
                 class="negative-process"
                 :text-inside="true"
                 :stroke-width="20"
-                :percentage="calcEmptyPercentage(structure)"
-                :format="() => structure.totalProd - structure.totalUsed"
+                :percentage="calcEmptyPercentage()"
+                :format="() => electricityTotal - electricityUsed"
                 color="#C22139"
               />
             </div>
             <div v-else-if="structure.id === 'fusionPlant'">
               <el-row class="structure-desc">
                 产电量:
-                <NumberFormat :value="structure.elecProd" />
-                <span class="elec-used"
-                  >(耗氢量: {{ structure.calcInput(structure.level) }})</span
-                >
+                <NumberFormat
+                  :value="(structure as ProducerData).produceSpeed.electricity"
+                />
+                <span class="elec-used">
+                  (耗氢量:
+                  {{ (structure as ProducerData).consumeSpeed.deuterium }})
+                </span>
               </el-row>
               <el-progress
                 :text-inside="true"
@@ -67,13 +73,20 @@
                 :color="structure.level ? '#87C025' : '#C22139'"
               />
             </div>
-            <div v-else-if="'output' in structure">
+            <div v-else-if="StructureConfigs[structure.id].type === 'producer'">
               <el-row class="structure-desc">
                 产量:
-                <NumberFormat :value="structure.output" />/s
-                <span class="elec-used"
-                  >(耗电量: {{ structure.elecUsed }})</span
-                >
+                <NumberFormat
+                  :value="
+                    Object.values((structure as ProducerData).produceSpeed)[0]
+                  "
+                />/s
+                <span class="elec-used">
+                  (耗电量:
+                  {{
+                    (structure as ProducerData).consumeSpeed.electricity || 0
+                  }})
+                </span>
               </el-row>
               <el-progress
                 :text-inside="true"
@@ -87,10 +100,24 @@
                 :color="structure.level ? '#87C025' : '#C22139'"
               />
             </div>
-            <div v-else-if="'store' in structure">
+            <div v-else-if="StructureConfigs[structure.id].type === 'storage'">
               <el-row class="structure-desc">
-                储量: <NumberFormat :value="structure.store" /> /
-                <NumberFormat :value="structure.storeLimit" />
+                储量:
+                <NumberFormat
+                  :value="
+                    planetData?.resources[
+                      (StructureConfigs[structure.id] as StorageConfig).resource
+                    ]?.amount
+                  "
+                />
+                /
+                <NumberFormat
+                  :value="
+                    planetData?.resources[
+                      (StructureConfigs[structure.id] as StorageConfig).resource
+                    ]?.capacity
+                  "
+                />
               </el-row>
               <el-progress
                 :text-inside="true"
@@ -106,13 +133,13 @@
                 </el-col>
                 <el-col
                   :span="24"
-                  v-for="(value, key) in structure.calcUpgradeCost(
-                    structure.level,
-                  )"
+                  v-for="(value, key) in StructureConfigs[
+                    structure.id
+                  ].getUpgradeCost(structure.level)"
                   :key="key"
                 >
-                  <el-text v-if="value > 0" type="info">
-                    {{ resourceName[key] }}: <NumberFormat :value="value" />
+                  <el-text type="info">
+                    {{ ResourceName[key] }}: <NumberFormat :value="value" />
                   </el-text>
                 </el-col>
               </el-row>
@@ -138,47 +165,40 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { io, Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
-import {
-  DeuteriumStorage,
-  EnergyStorage,
-  MetalStorage,
-  SolarPlant,
-  structuresMap,
-  StructureType,
-} from '@star-angry/core'
 import NumberFormat from '@/components/number/NumberFormat.vue'
+import {
+  AllStructureData,
+  isResourceEnough,
+  PlanetData,
+  ProducerData,
+  ResourceName,
+  StorageConfig,
+  StructureConfigs,
+  UserData,
+} from '@star-angry/core'
 
 const socket = ref<Socket | null>(null)
-const structures = ref<StructureType[]>([])
+const userData = ref<UserData>()
+const planetId = ref('')
+const planetData = ref<PlanetData>()
+const structures = ref<AllStructureData[]>([])
 const timerId = ref<number | null>(null)
-const resourceName = {
-  metal: '金属',
-  energy: '能量',
-  deuterium: '重氢气',
-}
-const resourceNum = {
-  metal: 0,
-  energy: 0,
-  deuterium: 0,
-}
-// ref<Record<ResourceType, number>>({
-//   [ResourceType.metal]: 0,
-//   [ResourceType.energy]: 0,
-//   [ResourceType.deuterium]: 0,
-// })
-const structureSort = [
-  'metalStorage',
-  'metalMine',
-  'energyStorage',
-  'energyMine',
-  'deuteriumStorage',
-  'deuteriumSintetizer',
-  'solarPlant',
-  'fusionPlant',
-]
+
+// 已经使用的电力
+const electricityUsed = computed(() => {
+  const data = planetData.value?.resources.electricity
+  if (!data) return 0
+  return data.capacity - data.amount
+})
+// 总电力
+const electricityTotal = computed(() => {
+  const data = planetData.value?.resources.electricity
+  if (!data) return 0
+  return data.capacity
+})
 
 onMounted(() => {
   socket.value = io('', {
@@ -193,7 +213,7 @@ onMounted(() => {
   })
 
   timerId.value = setInterval(() => {
-    getStructures()
+    getMyData()
   }, 1000) as unknown as number
 })
 
@@ -202,62 +222,55 @@ onUnmounted(() => {
   socket.value?.disconnect()
 })
 
-// 获取建筑
-const getStructures = () => {
-  socket.value
-    ?.timeout(5000)
-    .emit('getStructures', (err: any, response: any) => {
-      if (err) {
-        toast.error('获取建筑列表失败')
-      } else if (response.code === 0) {
-        const data = response.data
-        Object.keys(data).forEach((key) => {
-          const constructor = structuresMap[key as keyof typeof structuresMap]
-          if (!constructor) return
-          data[key] = new constructor(data[key])
-        })
-        Object.keys(structuresMap).forEach((key) => {
-          const constructor = structuresMap[key as keyof typeof structuresMap]
-          if (!constructor) return
-          if (key in data) {
-            data[key] = new constructor(data[key])
-          } else {
-            data[key] = new constructor()
-          }
-          if (data[key].store) {
-            if (data[key] instanceof MetalStorage)
-              resourceNum.metal = data[key].store
-            else if (data[key] instanceof EnergyStorage)
-              resourceNum.energy = data[key].store
-            else if (data[key] instanceof DeuteriumStorage)
-              resourceNum.deuterium = data[key].store
-          }
-        })
-
-        structures.value = Object.values(
-          structureSort.map((e) => data[e] || {}),
-        )
-      } else {
-        toast.error(response.msg)
-      }
-    })
+// 获取我的游戏数据
+const getMyData = () => {
+  socket.value?.timeout(5000).emit('getMyData', (err: any, response: any) => {
+    if (err) {
+      toast.error('获取游戏数据失败')
+    } else if (response.code === 0) {
+      const data = response.data as UserData
+      userData.value = data
+      // 暂时只考虑一个星球
+      planetId.value = Object.keys(data.planets)[0]
+      planetData.value = data.planets[planetId.value]
+      structures.value = Object.values(data.planets[planetId.value].structures)
+    } else {
+      toast.error(response.msg)
+    }
+  })
 }
 
 // 升级建筑
 const upgradeStructure = (id: string) => {
-  addIntent(id, 'upgrade', '升级成功', '升级失败')
+  addOperation(
+    {
+      planetId: planetId.value,
+      structureId: id,
+      operation: 'upgrade',
+    },
+    '升级成功',
+    '升级失败',
+  )
 }
 
-// 添加意图
-const addIntent = (
-  id: string,
-  type: string,
+// 添加操作
+const addOperation = (
+  params: {
+    planetId: string
+    structureId: string
+    operation: string
+  },
   successMsg: string,
   errorMsg: string,
 ) => {
+  if (!params.planetId) {
+    toast.error('未获取到星球信息')
+    return
+  }
+
   socket.value
     ?.timeout(5000)
-    .emit('addIntent', id, type, (err: any, response: any) => {
+    .emit('addOperation', params, (err: any, response: any) => {
       if (err) {
         toast.error(errorMsg)
       } else if (response.code === 0) {
@@ -273,28 +286,29 @@ const addIntent = (
 }
 
 // 储量百分比
-const calcCapacityPercentage = (
-  structure: MetalStorage | EnergyStorage | DeuteriumStorage,
-): number => {
-  return +((structure.store * 100) / structure.storeLimit).toFixed(2)
+const calcCapacityPercentage = (structure: AllStructureData): number => {
+  const resource =
+    planetData.value?.resources[
+      (StructureConfigs[structure.id] as StorageConfig).resource
+    ]
+  if (!resource) return 0
+  return +((resource.amount * 100) / resource.capacity).toFixed(2)
 }
 
-const calcEmptyPercentage = (structure: SolarPlant): number => {
-  structure.totalProd = structure.totalProd || 0
-  if (!structure.totalProd && !structure.totalUsed) return 0
+const calcEmptyPercentage = (): number => {
+  if (!electricityTotal.value && !electricityUsed.value) return 0
   return +Math.min(
     100,
     Math.abs(
-      ((structure.totalProd - structure.totalUsed) * 100) / structure.totalProd,
+      ((electricityTotal.value - electricityUsed.value) * 100) /
+        electricityTotal.value,
     ),
   ).toFixed(2)
 }
 
 // 储量进度条颜色
 const processStatus: string[] = ['success', '', '', 'warning', 'exception']
-const calcProcessColor = (
-  structure: MetalStorage | EnergyStorage | DeuteriumStorage,
-): string => {
+const calcProcessColor = (structure: AllStructureData): string => {
   const level = Math.ceil(
     Math.max(0, calcCapacityPercentage(structure) - 60) / 10,
   )
@@ -302,11 +316,33 @@ const calcProcessColor = (
 }
 
 // 能否升级
-const canUpgrade = (structure: StructureType): boolean => {
-  const upgradeCost = structure.calcUpgradeCost(structure.level)
-  if (upgradeCost.metal > resourceNum.metal) return false
-  if (upgradeCost.energy > resourceNum.energy) return false
-  if (upgradeCost.deuterium > resourceNum.deuterium) return false
+const canUpgrade = (structure: AllStructureData): boolean => {
+  if (!planetData.value) return false
+
+  const config = StructureConfigs[structure.id]
+  // 是否已经是最大等级
+  if (config.maxLevel && structure.level >= config.maxLevel) {
+    return false
+  }
+
+  // 获取升级依赖的前置建筑
+  const preStructure = config.preDepend
+  // 检查这些建筑的等级是否满足
+  if (preStructure) {
+    for (const [id, level] of Object.entries(preStructure)) {
+      if (planetData.value.structures[id].level < level) {
+        return false
+      }
+    }
+  }
+
+  // 获取升级所需资源
+  const cost = config.getUpgradeCost(structure.level)
+  // 检查资源是否足够并扣除资源
+  if (!isResourceEnough(planetData.value.resources, cost)) {
+    return false
+  }
+
   return true
 }
 </script>
