@@ -138,7 +138,7 @@ const transfromData = async () => {
     })
     await GameDB.getDB().setData(data)
     // 顺便写到文件看一下效果
-    fs.writeFileSync('dist/game.json', JSON.stringify(data, null, 2))
+    // fs.writeFileSync('dist/game.json', JSON.stringify(data, null, 2))
     console.log('迁移完成')
     process.exit(0)
   } catch (error) {
