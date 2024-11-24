@@ -16,6 +16,10 @@ export const processor = (
     return false
   }
 
+  // 以 _ 开头的操作为私有的操作，不允许用户调用
+  if (operation.includes('_')) {
+    return false
+  }
   const operationHanlder = getOperationHandler(structureId, operation)
   if (!operationHanlder) {
     return false

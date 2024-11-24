@@ -38,7 +38,8 @@ export const ProducerOperation: StructureOperationObject = {
   /**
    * 生产资源
    */
-  _produce(_, data, __, planetData) {
+  _produce(params, data, __, planetData) {
+    const { rate } = params as { rate: number }
     const structureData = data as ProducerData
     const produceSpeed = structureData.produceSpeed
     const consumeSpeed = structureData.consumeSpeed
@@ -46,11 +47,17 @@ export const ProducerOperation: StructureOperationObject = {
     structureData.lastUpdateTime = Date.now()
     const percent = deltaTime / 1000
 
+    // 是否消耗电能
+    const needElectricity = !!consumeSpeed.electricity
+
     // 先消耗资源
     for (const [type, speed] of Object.entries(consumeSpeed)) {
       const resourceData = planetData.resources[type as ResourceType]
       // 对于如电能这样的瞬时资源，不需要乘以时间系数
-      const cost = speed * (InstantResource[type as ResourceType] ? 1 : percent)
+      const cost =
+        speed *
+        (InstantResource[type as ResourceType] ? 1 : percent) *
+        (needElectricity ? rate : 1)
       // 资源不足，无法生产
       if (!resourceData || resourceData.amount < cost) {
         return false
@@ -78,7 +85,11 @@ export const ProducerOperation: StructureOperationObject = {
           resourceData.amount = resourceData.amount + Math.floor(speed)
         } else {
           resourceData.amount = Math.min(
-            Math.floor(resourceData.amount + speed * percent),
+            resourceData.amount +
+              Math.max(
+                Math.floor(speed * percent) * (needElectricity ? rate : 1),
+                1,
+              ),
             resourceData.capacity,
           )
         }
