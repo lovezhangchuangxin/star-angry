@@ -34,6 +34,17 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/user/RankPage.vue'),
       },
       {
+        path: '/admin',
+        name: 'Admin',
+        children: [
+          {
+            path: 'redeem-code',
+            name: 'RedeemCode',
+            component: () => import('@/views/admin/RedeemCode.vue'),
+          },
+        ],
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import('@/views/404/NotFoundPage.vue'),

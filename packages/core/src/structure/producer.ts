@@ -43,6 +43,7 @@ export const ProducerOperation: StructureOperationObject = {
     const produceSpeed = structureData.produceSpeed
     const consumeSpeed = structureData.consumeSpeed
     const deltaTime = Date.now() - structureData.lastUpdateTime
+    structureData.lastUpdateTime = Date.now()
     const percent = deltaTime / 1000
 
     // 先消耗资源

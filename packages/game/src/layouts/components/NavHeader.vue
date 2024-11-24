@@ -8,7 +8,7 @@
       </span>
       <span style="cursor: pointer" @click="router.push('/')">星怒</span>
       <span
-        style="margin-left: 100px; cursor: pointer"
+        style="margin-left: 50px; cursor: pointer"
         @click="router.push('/planet')"
       >
         我的星球
@@ -16,7 +16,14 @@
     </div>
 
     <div class="right">
-      {{ useStore.username }}
+      <span>{{ userStore.username }}</span>
+      <span
+        v-if="userStore.role === 1"
+        class="admin"
+        @click="router.push('/admin/redeem-code')"
+      >
+        管理员
+      </span>
     </div>
   </div>
   <NavSide :expand="isExpand" @go="handleGo" @close="toggleExpand" />
@@ -29,7 +36,7 @@ import { ref } from 'vue'
 import NavSide from './NavSide.vue'
 import { useRouter } from 'vue-router'
 
-const useStore = useUserStore()
+const userStore = useUserStore()
 const router = useRouter()
 const isExpand = ref(false)
 
@@ -48,10 +55,6 @@ const handleGo = (path: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  // position: fixed;
-  // top: 0;
-  // left: 0;
-  // right: 0;
   padding: 0 20px;
   height: 50px;
   background-color: #161a2a;
@@ -69,6 +72,14 @@ const handleGo = (path: string) => {
     display: flex;
     align-items: center;
     width: 20px;
+    cursor: pointer;
+  }
+
+  .admin {
+    color: #9a5de9;
+    padding: 0 5px;
+    border: 1px solid #9a5de9;
+    border-radius: 5px;
     cursor: pointer;
   }
 }
