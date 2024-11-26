@@ -57,7 +57,32 @@ export class GameDB extends DB {
         money: 0,
         xnc: 0,
       },
-      planets: {},
+      planets: {
+        1: {
+          name: '星球1',
+          level: 1,
+          speed: 0,
+          position: {
+            x: 0,
+            y: 0,
+          },
+          targetPosition: {
+            x: 0,
+            y: 0,
+          },
+          resources: {
+            energy: {
+              amount: 2000,
+              capacity: 2000,
+            },
+            metal: {
+              amount: 2000,
+              capacity: 2000,
+            },
+          },
+          structures: {},
+        },
+      },
     }
   }
 
