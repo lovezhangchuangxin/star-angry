@@ -33,7 +33,7 @@ export default class GameService {
   static async initData() {
     const data = await GameDB.getDB().getData()
     init(data.userDataMap)
-    console.log('initData')
+    console.log('initGameData')
   }
 
   /**

@@ -1,8 +1,7 @@
 import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
-import { UserModel } from './model/user'
 import { Mutex } from './AsyncLock'
-import { initPlanet, UserData, UserDataMap } from 'packages/core/src'
+import { initPlanet } from '@star-angry/core'
 
 const mutex = new Mutex()
 export class GameDB extends DB {

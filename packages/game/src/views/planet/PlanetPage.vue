@@ -25,7 +25,7 @@
           </template>
 
           <div class="structure-body">
-            <div v-if="structure.id === 'solarPlant'">
+            <div v-if="structure.id === 'solarPlant' && structure.level">
               <el-row class="structure-desc">
                 产电量:
                 <NumberFormat
@@ -50,7 +50,9 @@
                 color="#C22139"
               />
             </div>
-            <div v-else-if="structure.id === 'fusionPlant'">
+            <div
+              v-else-if="structure.id === 'planetaryEngine' && structure.level"
+            >
               <el-row class="structure-desc">
                 产电量:
                 <NumberFormat
@@ -73,7 +75,12 @@
                 :color="structure.level ? '#87C025' : '#C22139'"
               />
             </div>
-            <div v-else-if="StructureConfigs[structure.id].type === 'producer'">
+            <div
+              v-else-if="
+                StructureConfigs[structure.id].type === 'producer' &&
+                structure.level
+              "
+            >
               <el-row class="structure-desc">
                 产量:
                 <NumberFormat
@@ -129,7 +136,9 @@
             <el-row class="structure-desc">
               <el-row>
                 <el-col :span="24">
-                  <el-text type="info"> 升级需求: </el-text>
+                  <el-text type="info">
+                    {{ `${structure.level ? '升级' : '建造'}需求:` }}
+                  </el-text>
                 </el-col>
                 <el-col
                   :span="24"
@@ -155,7 +164,7 @@
               :disabled="!canUpgrade(structure)"
               :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
             >
-              升级
+              {{ `${structure.level ? '升级' : '建造'}` }}
             </el-button>
           </template>
         </el-card>
@@ -191,7 +200,7 @@ const timerId = ref<number | null>(null)
 const electricityUsed = computed(() => {
   const data = planetData.value?.resources.electricity
   if (!data) return 0
-  return data.capacity - data.amount
+  return -data.amount
 })
 // 总电力
 const electricityTotal = computed(() => {
@@ -338,7 +347,7 @@ const canUpgrade = (structure: AllStructureData): boolean => {
 
   // 获取升级所需资源
   const cost = config.getUpgradeCost(structure.level)
-  // 检查资源是否足够并扣除资源
+  // 检查资源是否足够
   if (!isResourceEnough(planetData.value.resources, cost)) {
     return false
   }

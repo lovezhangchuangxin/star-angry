@@ -45,7 +45,7 @@ export const StructureConfigs: StructureConfig = {
       metal: Math.floor(2000 * Math.pow(2, level)),
     }),
     capacity: (level) =>
-      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 1000,
+      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 50,
   },
 
   metalMine: {
@@ -76,7 +76,7 @@ export const StructureConfigs: StructureConfig = {
       metal: Math.floor(2000 * Math.pow(2, level)),
     }),
     capacity: (level) =>
-      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 1000,
+      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 50,
   },
 
   deuteriumSintetizer: {
@@ -109,7 +109,7 @@ export const StructureConfigs: StructureConfig = {
       metal: Math.floor(2000 * Math.pow(2, level)),
     }),
     capacity: (level) =>
-      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 1000,
+      Math.floor(2.5 * Math.pow(1.8331954764, level)) * 5000 * 50,
   },
 
   planetaryEngine: {

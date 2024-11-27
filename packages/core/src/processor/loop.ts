@@ -66,7 +66,7 @@ const produce = (planet: PlanetData) => {
     })
     Object.keys(curr[1]).forEach((type) => {
       const resourceType = type as ResourceType
-      prev[resourceType] = (prev[resourceType] ?? 0) + curr[0][resourceType]!
+      prev[resourceType] = (prev[resourceType] ?? 0) + curr[1][resourceType]!
     })
     return prev
   }, {} as ResourceNumberMap)

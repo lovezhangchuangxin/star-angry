@@ -35,6 +35,8 @@ export function isStorageFull(
   planetResource: PlanetResource,
   resources: ResourceType[],
 ) {
+  if (!resources.length) return false
+
   return resources.every((type) => {
     const resource = planetResource[type]
     return resource && resource.amount >= resource.capacity

@@ -51,6 +51,11 @@ export const ProducerOperation: StructureOperationObject = {
    */
   _produce(params = {}, data, __, planetData) {
     const structureData = data as ProducerData
+    // 暂停生产
+    if (structureData.pause) {
+      return false
+    }
+
     const produceSpeed = structureData.produceSpeed
     const consumeSpeed = structureData.consumeSpeed
     const deltaTime = Date.now() - structureData.lastUpdateTime
@@ -68,7 +73,9 @@ export const ProducerOperation: StructureOperationObject = {
     if (
       isStorageFull(
         planetData.resources,
-        Object.keys(produceSpeed) as ResourceType[],
+        Object.keys(produceSpeed).filter(
+          (type) => type !== ResourceType.Electricity,
+        ) as ResourceType[],
       )
     ) {
       return false
@@ -111,6 +118,15 @@ export const ProducerOperation: StructureOperationObject = {
       }
     }
 
+    return true
+  },
+
+  /**
+   * 切换暂停状态
+   */
+  togglePause(_, data) {
+    const structureData = data as ProducerData
+    structureData.pause = !structureData.pause
     return true
   },
 }

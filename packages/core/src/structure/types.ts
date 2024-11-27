@@ -47,10 +47,6 @@ export interface StructureBaseConfig {
    */
   image?: string
   /**
-   * 是否允许暂停
-   */
-  enablePause?: boolean
-  /**
    * 优先级，小的在前面，默认 1000
    */
   priority?: number
