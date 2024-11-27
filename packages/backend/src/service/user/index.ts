@@ -170,7 +170,7 @@ export default class UserService {
       )
       const elecProd = Object.values(userData?.planets || {}).reduce(
         (prev, cur) => {
-          return prev + (cur.resources.electricity?.amount ?? 0)
+          return prev + (cur.resources.electricity?.capacity ?? 0)
         },
         0,
       )

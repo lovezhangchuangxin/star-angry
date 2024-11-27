@@ -20,7 +20,7 @@ export const StorageOperation: StructureOperationObject = {
     const { structureId } = params
     const config = structureConfigs[structureId] as StorageConfig
     const resource = config.resource
-    const capacity = config.capacity(data.level)
+    const capacity = config.capacity(0)
     planetData.resources[resource] = { amount: 2000, capacity }
 
     return true
