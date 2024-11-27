@@ -155,17 +155,28 @@
             </el-row>
           </div>
           <template #footer>
-            <el-button
-              class="upgrade-btn"
-              @click="() => upgradeStructure(structure.id)"
-              type="primary"
-              round
-              dark
-              :disabled="!canUpgrade(structure)"
-              :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
-            >
-              {{ `${structure.level ? '升级' : '建造'}` }}
-            </el-button>
+            <div class="button-group">
+              <el-button
+                @click="() => upgradeStructure(structure.id)"
+                type="primary"
+                round
+                dark
+                :disabled="!canUpgrade(structure)"
+                :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
+              >
+                {{ `${structure.level ? '升级' : '建造'}` }}
+              </el-button>
+              <el-button
+                v-if="StructureConfigs[structure.id].type === 'producer'"
+                @click="() => togglePause(structure.id)"
+                type="primary"
+                round
+                dark
+                color="#41bfda"
+              >
+                {{ `${structure.pause ? '启动' : '暂停'}` }}
+              </el-button>
+            </div>
           </template>
         </el-card>
       </el-col>
@@ -259,6 +270,18 @@ const upgradeStructure = (id: string) => {
     },
     '升级成功',
     '升级失败',
+  )
+}
+
+const togglePause = (id: string) => {
+  addOperation(
+    {
+      planetId: planetId.value,
+      structureId: id,
+      operation: 'togglePause',
+    },
+    '操作成功',
+    '操作失败',
   )
 }
 
@@ -380,8 +403,12 @@ const canUpgrade = (structure: AllStructureData): boolean => {
       }
     }
 
-    .upgrade-btn {
-      width: 100%;
+    .button-group {
+      display: flex;
+
+      button {
+        flex: 1;
+      }
     }
   }
 }

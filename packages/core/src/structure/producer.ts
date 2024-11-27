@@ -51,6 +51,10 @@ export const ProducerOperation: StructureOperationObject = {
    */
   _produce(params = {}, data, __, planetData) {
     const structureData = data as ProducerData
+    const now = Date.now()
+    const deltaTime = now - (structureData.lastUpdateTime ?? now)
+    structureData.lastUpdateTime = now
+
     // 暂停生产
     if (structureData.pause) {
       return false
@@ -58,9 +62,6 @@ export const ProducerOperation: StructureOperationObject = {
 
     const produceSpeed = structureData.produceSpeed
     const consumeSpeed = structureData.consumeSpeed
-    const now = Date.now()
-    const deltaTime = now - (structureData.lastUpdateTime ?? now)
-    structureData.lastUpdateTime = now
     const percent = deltaTime / 1000
 
     // 是否消耗电能
