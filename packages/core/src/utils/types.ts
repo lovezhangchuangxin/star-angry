@@ -61,7 +61,7 @@ export interface PlanetData {
   /**
    * 星球资源
    */
-  resources: PlanetResource
+  resources: Required<PlanetResource>
   /**
    * 星球建筑
    */
@@ -106,4 +106,11 @@ export type StructureOperationFunc = (
  */
 export interface StructureOperationObject {
   [operationId: string]: StructureOperationFunc
+}
+
+/**
+ * 资源数量 Map
+ */
+export type ResourceNumberMap = {
+  [resourceId in ResourceType]?: number
 }

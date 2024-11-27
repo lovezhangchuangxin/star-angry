@@ -1,4 +1,5 @@
-import { InstantResource, ResourceType } from '../config/resource'
+import { ResourceType } from '../config/resource'
+import { isStorageFull } from '../utils'
 import { StructureOperationObject } from '../utils/types'
 import { StructureBaseOperation } from './base'
 import { ProducerConfig, ProducerData } from './types'
@@ -38,8 +39,7 @@ export const ProducerOperation: StructureOperationObject = {
   /**
    * 生产资源
    */
-  _produce(params, data, __, planetData) {
-    const { rate } = params as { rate: number }
+  _produce(params = {}, data, __, planetData) {
     const structureData = data as ProducerData
     const produceSpeed = structureData.produceSpeed
     const consumeSpeed = structureData.consumeSpeed
@@ -49,25 +49,42 @@ export const ProducerOperation: StructureOperationObject = {
 
     // 是否消耗电能
     const needElectricity = !!consumeSpeed.electricity
+    // 第 0 项表示消耗的资源，第 1 项表示生产的资源
+    const changeResources = (params.changeResources = [{}, {}] as {
+      [key in ResourceType]?: number
+    }[])
+
+    // 检查仓库是否都满了
+    if (
+      isStorageFull(
+        planetData.resources,
+        Object.keys(produceSpeed) as ResourceType[],
+      )
+    ) {
+      return false
+    }
 
     // 先消耗资源
     for (const [type, speed] of Object.entries(consumeSpeed)) {
+      const isElectricity = type === ResourceType.Electricity
       const resourceData = planetData.resources[type as ResourceType]
-      // 对于如电能这样的瞬时资源，不需要乘以时间系数
-      const cost =
-        speed *
-        (InstantResource[type as ResourceType] ? 1 : percent) *
-        (needElectricity ? rate : 1)
-      // 资源不足，无法生产
-      if (!resourceData || resourceData.amount < cost) {
+      const cost = Math.ceil(speed * (isElectricity ? 1 : percent))
+      // 资源不足，无法生产，先不考虑电能够不够
+      if (!resourceData || (!isElectricity && resourceData.amount < cost)) {
         return false
       }
-      resourceData.amount = Math.max(Math.ceil(resourceData.amount - cost), 0)
+      resourceData.amount -= cost
+      // 记录消耗的资源
+      if (needElectricity && !isElectricity) {
+        changeResources[0][type as ResourceType] = cost
+      }
     }
 
     // 再生产资源
     for (const [type, speed] of Object.entries(produceSpeed)) {
+      const isElectricity = type === ResourceType.Electricity
       const resourceData = planetData.resources[type as ResourceType]
+      const produce = Math.floor(speed * (isElectricity ? 1 : percent))
       // 没有就创建
       if (!resourceData) {
         planetData.resources[type as ResourceType] = {
@@ -75,23 +92,11 @@ export const ProducerOperation: StructureOperationObject = {
           capacity: 0,
         }
       } else {
-        // 对于如电能这样的瞬时资源，容量和存储量都要加上，且不需要乘以时间系数
-        if (InstantResource[type as ResourceType]) {
-          // console.log('增加电能：', Math.floor(speed * percent))
-          // console.log('当前电能：', resourceData.amount)
-          // console.log('容量：', resourceData.capacity)
-
-          resourceData.capacity = resourceData.capacity + Math.floor(speed)
-          resourceData.amount = resourceData.amount + Math.floor(speed)
-        } else {
-          resourceData.amount = Math.min(
-            resourceData.amount +
-              Math.max(
-                Math.floor(speed * percent) * (needElectricity ? rate : 1),
-                1,
-              ),
-            resourceData.capacity,
-          )
+        // 如果是电能，加上容量上
+        resourceData[isElectricity ? 'capacity' : 'amount'] += produce
+        // 记录生产的资源
+        if (needElectricity && !isElectricity) {
+          changeResources[1][type as ResourceType] = produce
         }
       }
     }

@@ -27,3 +27,16 @@ export function isResourceEnough(
 
   return true
 }
+
+/**
+ * 检查要生产的资源所在仓库是否都满了
+ */
+export function isStorageFull(
+  planetResource: PlanetResource,
+  resources: ResourceType[],
+) {
+  return resources.every((type) => {
+    const resource = planetResource[type]
+    return resource && resource.amount >= resource.capacity
+  })
+}
