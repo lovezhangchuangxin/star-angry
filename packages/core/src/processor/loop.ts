@@ -40,7 +40,11 @@ const produce = (planet: PlanetData) => {
     .forEach((structure) => {
       const operationObject =
         StructureOperationMap[StructureConfigs[structure.id]?.type]
-      if (operationObject && '_update' in operationObject) {
+      if (
+        operationObject &&
+        '_update' in operationObject &&
+        structure.level >= 1
+      ) {
         const params = { changeResources: [] }
         const result = operationObject._update(
           params,
@@ -79,7 +83,7 @@ const produce = (planet: PlanetData) => {
 
   // 更新资源
   Object.entries(resouceChangeMap).forEach(([type, amount]) => {
-    planet.resources[type as ResourceType].amount -= Math.floor(
+    planet.resources[type as ResourceType]!.amount -= Math.floor(
       amount * (1 - rate),
     )
   })

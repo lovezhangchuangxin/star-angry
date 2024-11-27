@@ -61,7 +61,7 @@ export interface PlanetData {
   /**
    * 星球资源
    */
-  resources: Required<PlanetResource>
+  resources: PlanetResource
   /**
    * 星球建筑
    */

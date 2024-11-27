@@ -2,7 +2,7 @@ import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
 import { UserModel } from './model/user'
 import { Mutex } from './AsyncLock'
-import { UserData, UserDataMap } from 'packages/core/src'
+import { initPlanet, UserData, UserDataMap } from 'packages/core/src'
 
 const mutex = new Mutex()
 export class GameDB extends DB {
@@ -58,7 +58,7 @@ export class GameDB extends DB {
         xnc: 0,
       },
       planets: {
-        1: {
+        0: {
           name: '星球1',
           level: 1,
           speed: 0,
@@ -70,20 +70,12 @@ export class GameDB extends DB {
             x: 0,
             y: 0,
           },
-          resources: {
-            energy: {
-              amount: 2000,
-              capacity: 2000,
-            },
-            metal: {
-              amount: 2000,
-              capacity: 2000,
-            },
-          },
+          resources: {},
           structures: {},
         },
       },
     }
+    initPlanet(data.userDataMap[userId].planets[0])
   }
 
   initData() {

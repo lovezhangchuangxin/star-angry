@@ -7,6 +7,23 @@ import { StorageConfig } from './types'
  */
 export const StorageOperation: StructureOperationObject = {
   /**
+   * 初始化
+   */
+  _init(_, data, structureConfigs, planetData) {
+    if (!StructureBaseOperation._init(_, data, structureConfigs, planetData)) {
+      return false
+    }
+
+    // 更新星球资源容量
+    const config = structureConfigs[data.id] as StorageConfig
+    const resource = config.resource
+    const capacity = config.capacity(data.level)
+    planetData.resources[resource] = { amount: 2000, capacity }
+
+    return true
+  },
+
+  /**
    * 升级
    */
   upgrade(_, data, structureConfigs, planetData) {
@@ -20,12 +37,7 @@ export const StorageOperation: StructureOperationObject = {
     const config = structureConfigs[data.id] as StorageConfig
     const resource = config.resource
     const capacity = config.capacity(data.level)
-    const resourceConfig = planetData.resources[resource]
-    if (!resourceConfig) {
-      planetData.resources[resource] = { amount: 0, capacity }
-    } else {
-      resourceConfig.capacity = capacity
-    }
+    planetData.resources[resource]!.capacity = capacity
 
     return true
   },

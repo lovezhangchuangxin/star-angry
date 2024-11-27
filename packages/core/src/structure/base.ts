@@ -2,9 +2,24 @@ import { isResourceEnough } from '../utils/planet'
 import { StructureOperationObject } from '../utils/types'
 
 /**
- * 建筑操作
+ * 建筑基础操作
  */
 export const StructureBaseOperation: StructureOperationObject = {
+  /**
+   * 初始化
+   */
+  _init(params, data, _, planetData) {
+    const { structureId } = params
+    if (data?.level === undefined) {
+      planetData.structures[structureId] = { id: structureId, level: 0 } as any
+      return true
+    }
+    return false
+  },
+
+  /**
+   * 升级
+   */
   upgrade(_, data, structureConfigs, planetData) {
     const config = structureConfigs[data.id]
 

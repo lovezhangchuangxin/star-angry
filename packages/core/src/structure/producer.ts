@@ -9,6 +9,16 @@ import { ProducerConfig, ProducerData } from './types'
  */
 export const ProducerOperation: StructureOperationObject = {
   /**
+   * 初始化
+   */
+  _init(_, data, structureConfigs, planetData) {
+    if (!StructureBaseOperation._init(_, data, structureConfigs, planetData)) {
+      return false
+    }
+    return true
+  },
+
+  /**
    * 更新
    */
   _update(_, data, structureConfigs, planetData) {

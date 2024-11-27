@@ -4,6 +4,7 @@ import GameService from './service/game'
 
 server.listen(process.env.GAME_PORT, () => {
   console.log(`Server is running at http://localhost:${process.env.GAME_PORT}`)
+  GameService.initData()
   GameService.startLoop()
 })
 

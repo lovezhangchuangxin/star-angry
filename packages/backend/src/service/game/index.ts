@@ -1,4 +1,4 @@
-import { loop } from '@star-angry/core'
+import { init, loop } from '@star-angry/core'
 import { GameDB } from '@star-angry/db'
 
 export default class GameService {
@@ -25,6 +25,15 @@ export default class GameService {
   static async getMyData(userId: string) {
     const data = await GameDB.getDB().getData()
     return data.userDataMap[userId]
+  }
+
+  /**
+   * 初始化游戏数据
+   */
+  static async initData() {
+    const data = await GameDB.getDB().getData()
+    init(data.userDataMap)
+    console.log('initData')
   }
 
   /**
