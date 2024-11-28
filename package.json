@@ -15,7 +15,7 @@
     "lint": "eslint --fix . --cache",
     "lint:staged": "lint-staged",
     "dev:game": "pnpm --filter @star-angry/game dev",
-    "dev:backend": "pnpm --filter @star-angry/backend dev",
+    "dev:backend": "pnpm --filter @star-angry/backend start",
     "build:game": "pnpm --filter @star-angry/game build",
     "docs:dev": "pnpm --filter @star-angry/docs docs:dev",
     "docs:build": "pnpm --filter @star-angry/docs docs:build"

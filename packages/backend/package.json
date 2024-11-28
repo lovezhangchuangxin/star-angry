@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsnd --respawn --transpile-only src/index.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "migrate": "tsx scripts/migrate.ts",
+    "start": "pnpm migrate && pnpm dev"
   },
   "keywords": [],
   "author": "",
