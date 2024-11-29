@@ -132,4 +132,18 @@ export const StructureConfigs: StructureConfig = {
     }),
     priority: 120,
   },
+} as const
+
+// 建筑在前端的展示顺序，数字越小越靠前
+export const StructureOrder: {
+  [structureId: string]: number
+} = {
+  metalStorage: 1,
+  metalMine: 2,
+  energyStorage: 3,
+  energyMine: 4,
+  deuteriumStorage: 5,
+  deuteriumSintetizer: 6,
+  solarPlant: 7,
+  planetaryEngine: 8,
 }
