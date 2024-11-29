@@ -94,7 +94,7 @@ const migrate = async () => {
             xnc: 0,
           },
           planets: {
-            1: {
+            0: {
               name: '星球1',
               level: 1,
               speed: 0,
