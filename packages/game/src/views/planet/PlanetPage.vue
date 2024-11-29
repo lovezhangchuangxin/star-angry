@@ -14,9 +14,18 @@
           <template #header>
             <div class="card-header">
               <el-row justify="space-between">
-                <el-text class="structure-name" size="large">
-                  {{ StructureConfigs[structure.id].name }}
-                </el-text>
+                <div>
+                  <el-text class="structure-name" size="large">
+                    {{ StructureConfigs[structure.id].name }}
+                  </el-text>
+                  <el-switch
+                    v-if="StructureConfigs[structure.id].type === 'producer'"
+                    @click="() => togglePause(structure.id)"
+                    :model-value="!structure.pause"
+                    size="small"
+                    class="pause-btn"
+                  />
+                </div>
                 <el-tag type="info" color="#613e3b" effect="dark">
                   lv.{{ structure.level }}
                 </el-tag>
@@ -25,11 +34,11 @@
           </template>
 
           <div class="structure-body">
-            <div v-if="structure.id === 'solarPlant' && structure.level">
+            <div v-if="structure.id === 'solarPlant'">
               <el-row class="structure-desc">
                 产电量:
                 <NumberFormat
-                  :value="(structure as ProducerData).produceSpeed.electricity"
+                  :value="(structure as ProducerData).produceSpeed?.electricity"
                 />
               </el-row>
               <el-progress
@@ -50,17 +59,17 @@
                 color="#C22139"
               />
             </div>
-            <div
-              v-else-if="structure.id === 'planetaryEngine' && structure.level"
-            >
+            <div v-else-if="structure.id === 'planetaryEngine'">
               <el-row class="structure-desc">
                 产电量:
                 <NumberFormat
-                  :value="(structure as ProducerData).produceSpeed.electricity"
+                  :value="(structure as ProducerData).produceSpeed?.electricity"
                 />
                 <span class="elec-used">
                   (耗氢量:
-                  {{ (structure as ProducerData).consumeSpeed.deuterium }})
+                  {{
+                    (structure as ProducerData).consumeSpeed?.deuterium || 0
+                  }})
                 </span>
               </el-row>
               <el-progress
@@ -75,23 +84,20 @@
                 :color="structure.level ? '#87C025' : '#C22139'"
               />
             </div>
-            <div
-              v-else-if="
-                StructureConfigs[structure.id].type === 'producer' &&
-                structure.level
-              "
-            >
+            <div v-else-if="StructureConfigs[structure.id].type === 'producer'">
               <el-row class="structure-desc">
                 产量:
                 <NumberFormat
                   :value="
-                    Object.values((structure as ProducerData).produceSpeed)[0]
+                    Object.values(
+                      (structure as ProducerData).produceSpeed || {},
+                    )[0]
                   "
                 />/s
                 <span class="elec-used">
                   (耗电量:
                   {{
-                    (structure as ProducerData).consumeSpeed.electricity || 0
+                    (structure as ProducerData).consumeSpeed?.electricity || 0
                   }})
                 </span>
               </el-row>
@@ -165,16 +171,6 @@
                 :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
               >
                 {{ `${structure.level ? '升级' : '建造'}` }}
-              </el-button>
-              <el-button
-                v-if="StructureConfigs[structure.id].type === 'producer'"
-                @click="() => togglePause(structure.id)"
-                type="primary"
-                round
-                dark
-                color="#41bfda"
-              >
-                {{ `${structure.pause ? '启动' : '暂停'}` }}
               </el-button>
             </div>
           </template>
@@ -324,7 +320,7 @@ const calcCapacityPercentage = (structure: AllStructureData): number => {
       (StructureConfigs[structure.id] as StorageConfig).resource
     ]
   if (!resource) return 0
-  return +((resource.amount * 100) / resource.capacity).toFixed(2)
+  return +Math.min(100, (resource.amount * 100) / resource.capacity).toFixed(2)
 }
 
 const calcEmptyPercentage = (): number => {
@@ -389,6 +385,11 @@ const canUpgrade = (structure: AllStructureData): boolean => {
     margin: 10px 0;
     .structure-name {
       color: #cbc0aa;
+    }
+    .pause-btn {
+      --el-switch-on-color: #13ce66;
+      --el-switch-off-color: #ff4949;
+      margin-left: 10px;
     }
 
     .structure-body {
