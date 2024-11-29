@@ -81,10 +81,16 @@ const produce = (planet: PlanetData) => {
       ? 1
       : Math.min(electricityProduce / electricityConsume, 1)
 
-  // 更新资源
-  Object.entries(resouceChangeMap).forEach(([type, amount]) => {
-    planet.resources[type as ResourceType]!.amount -= Math.floor(
-      amount * (1 - rate),
-    )
-  })
+  if (rate === 0) {
+    Object.entries(resouceChangeMap).forEach(([type, amount]) => {
+      planet.resources[type as ResourceType]!.amount -= amount - 1
+    })
+  } else if (rate < 1) {
+    // 更新资源
+    Object.entries(resouceChangeMap).forEach(([type, amount]) => {
+      planet.resources[type as ResourceType]!.amount -= Math.floor(
+        amount * (1 - rate),
+      )
+    })
+  }
 }

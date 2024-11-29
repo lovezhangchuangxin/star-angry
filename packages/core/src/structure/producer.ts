@@ -104,12 +104,9 @@ export const ProducerOperation: StructureOperationObject = {
       const isElectricity = type === ResourceType.Electricity
       const resourceData = planetData.resources[type as ResourceType]
       const produce = Math.floor(speed * (isElectricity ? 1 : percent))
-      // 没有就创建
       if (!resourceData) {
-        planetData.resources[type as ResourceType] = {
-          amount: 0,
-          capacity: 0,
-        }
+        // 正常不可能走到这个分支，因为所有的资源一开始就会初始化
+        return false
       } else {
         // 如果是电能，加上容量上
         resourceData[isElectricity ? 'capacity' : 'amount'] += produce

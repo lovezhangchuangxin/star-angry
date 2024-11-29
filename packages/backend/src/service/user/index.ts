@@ -112,8 +112,7 @@ export default class UserService {
       return Result.success({ cacheVerification })
     }
 
-    const verification = '888888'
-    //Math.random().toString().slice(-6)
+    const verification = Math.random().toString().slice(-6)
     try {
       await MailUtil.sendMail({
         from: process.env.MAIL_USERNAME,

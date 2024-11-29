@@ -217,6 +217,7 @@ import {
   ResourceName,
   StorageConfig,
   StructureConfigs,
+  StructureOrder,
   UserData,
 } from '@star-angry/core'
 
@@ -273,7 +274,11 @@ const getMyData = () => {
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
       planetData.value = data.planets[planetId.value]
-      structures.value = Object.values(data.planets[planetId.value].structures)
+      structures.value = Object.values(
+        data.planets[planetId.value].structures,
+      ).sort((a, b) => {
+        return StructureOrder[a.id] - StructureOrder[b.id]
+      })
     } else {
       toast.error(response.msg)
     }
