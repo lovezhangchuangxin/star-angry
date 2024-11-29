@@ -8,16 +8,16 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' },
+      { text: '主页', link: '/' },
+      { text: '快速入门', link: '/gameplay/quickStart' },
     ],
 
     sidebar: [
       {
-        text: 'Examples',
+        text: '游戏简介',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' },
+          { text: '游戏背景', link: '/gameplay/background' },
+          { text: '快速入门', link: '/gameplay/quickStart' },
         ],
       },
     ],
@@ -25,5 +25,22 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/vuejs/vitepress' },
     ],
+
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2024-present Keqing',
+    },
+
+    lastUpdated: {
+      text: 'Updated at',
+      formatOptions: {
+        dateStyle: 'full',
+        timeStyle: 'medium',
+      },
+    },
+
+    search: {
+      provider: 'local',
+    },
   },
 })

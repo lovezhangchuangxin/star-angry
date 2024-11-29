@@ -1,14 +1,16 @@
 import { GameDB } from '@star-angry/db'
 import { server } from './app/server'
-import StructureService from './service/structure'
+import GameService from './service/game'
 
 server.listen(process.env.GAME_PORT, () => {
   console.log(`Server is running at http://localhost:${process.env.GAME_PORT}`)
-  StructureService.execIntent()
+  GameService.initData()
+  GameService.startLoop()
 })
 
 const handleStop = () => {
   console.log('Server is stopping...')
+  GameService.stopLoop()
   GameDB.getDB()
     .saveData()
     .then(() => {

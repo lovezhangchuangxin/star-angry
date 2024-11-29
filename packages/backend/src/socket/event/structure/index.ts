@@ -6,34 +6,32 @@ import { GameError } from '../../../error/GameError'
 import UserService from '../../../service/user'
 
 export const structureEventHandler = (socket: Socket, io: Server) => {
-  // 获取自己的所有建筑
-  socket.on('getStructures', async (callback) => {
-    const userId = socket.userId
-    if (!userId) {
-      return callback(Result.error(ErrorCode.PARAM_ERROR))
-    }
-
-    const data = await StructureService.getStructures(userId)
-    UserService.onlineUser(userId)
-    return callback(Result.success(data))
-  })
-
-  // 添加意图
-  socket.on('addIntent', async (id: string, type: string, callback) => {
-    const userId = socket.userId
-    if (!userId || !id) {
-      return callback(Result.error(ErrorCode.PARAM_ERROR))
-    }
-
-    try {
-      const data = await StructureService.addIntent(userId, id, type)
-      UserService.activeUser(userId)
-      return callback(Result.success(data))
-    } catch (error: unknown) {
-      console.error(error)
-      if (error instanceof GameError) {
-        return callback(Result.error(error.errorCode))
+  // 添加操作
+  socket.on(
+    'addOperation',
+    async (
+      params: {
+        planetId: string
+        structureId: string
+        operation: string
+      },
+      callback,
+    ) => {
+      const userId = socket.userId
+      if (!userId) {
+        return callback(Result.error(ErrorCode.PARAM_ERROR))
       }
-    }
-  })
+
+      try {
+        const data = await StructureService.addOperation({ ...params, userId })
+        UserService.activeUser(userId)
+        return callback(Result.success(data))
+      } catch (error: unknown) {
+        console.error(error)
+        if (error instanceof GameError) {
+          return callback(Result.error(error.errorCode))
+        }
+      }
+    },
+  )
 }

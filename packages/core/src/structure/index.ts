@@ -1,41 +1,29 @@
-import { DeuteriumSintetizer } from './deuterium-sintetizer'
-import { DeuteriumStorage } from './deuterium-storage'
-import { EnergyMine } from './energy-mine'
-import { EnergyStorage } from './energy-storage'
-import { FusionPlant } from './fusion-plant'
-import { MetalMine } from './metal-mine'
-import { MetalStorage } from './metal-storage'
-import { SolarPlant } from './solar-plant'
+import { StructureConfigs } from '../config'
+import { StructureOperationObject } from '../utils/types'
+import { ProducerOperation } from './producer'
+import { StorageOperation } from './storage'
+import { StructureType } from './types'
 
-export {
-  EnergyMine,
-  EnergyStorage,
-  MetalMine,
-  MetalStorage,
-  DeuteriumSintetizer,
-  DeuteriumStorage,
-  SolarPlant,
-  FusionPlant,
+export * from './types'
+
+export const StructureOperationMap: {
+  [type in StructureType]: StructureOperationObject
+} = {
+  storage: StorageOperation,
+  producer: ProducerOperation,
 }
-export * from './structure'
 
-export type StructureType =
-  | EnergyMine
-  | EnergyStorage
-  | MetalMine
-  | MetalStorage
-  | DeuteriumSintetizer
-  | DeuteriumStorage
-  | SolarPlant
-  | FusionPlant
+/**
+ * 获取建筑操作处理函数
+ *
+ * @param id 建筑 id
+ * @param operation 操作类型
+ */
+export const getOperationHandler = (id: string, operation: string) => {
+  const config = StructureConfigs[id]
+  if (!config) {
+    return
+  }
 
-export const structuresMap = {
-  energyMine: EnergyMine,
-  energyStorage: EnergyStorage,
-  metalMine: MetalMine,
-  metalStorage: MetalStorage,
-  deuteriumSintetizer: DeuteriumSintetizer,
-  deuteriumStorage: DeuteriumStorage,
-  solarPlant: SolarPlant,
-  fusionPlant: FusionPlant,
+  return StructureOperationMap[config.type][operation]
 }

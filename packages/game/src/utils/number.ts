@@ -10,5 +10,5 @@ export const timeFromNow = (timestamp: number): string => {
 }
 
 export const numberWithCommas = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return num?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 }

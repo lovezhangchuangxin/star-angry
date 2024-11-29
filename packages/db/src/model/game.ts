@@ -1,8 +1,10 @@
+import { UserDataMap } from '@star-angry/core'
 import { MessageMap } from './message'
-import { UseDataMap, UserModel } from './user'
+import { UserModel } from './user'
 
 export interface GameModel {
+  version: string // 游戏数据的版本
   user: UserModel[]
   messages: MessageMap
-  userData: UseDataMap
+  userDataMap: UserDataMap
 }

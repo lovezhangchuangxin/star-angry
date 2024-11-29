@@ -8,6 +8,7 @@ import { GameError } from '../../error/GameError'
 import { TimeCache } from '@star-angry/shared'
 import { MailUtil } from '../../utils/mail'
 import StructureService from '../structure'
+import { ResourceType } from '@star-angry/core'
 
 export default class UserService {
   static verificationCache = new TimeCache()
@@ -54,7 +55,7 @@ export default class UserService {
     }
     const { password: _, ...safeUserInfo } = userInfo
     data.user.push(userInfo)
-    GameDB.getDB().processUserData(data.user, data.userData, true)
+    GameDB.getDB().addUser(userInfo.id)
 
     // 生成 jwt
     const token = jwt.sign(
@@ -111,8 +112,7 @@ export default class UserService {
       return Result.success({ cacheVerification })
     }
 
-    const verification = '888888'
-    //Math.random().toString().slice(-6)
+    const verification = Math.random().toString().slice(-6)
     try {
       await MailUtil.sendMail({
         from: process.env.MAIL_USERNAME,
@@ -138,40 +138,55 @@ export default class UserService {
    */
   static async getRank() {
     const data = await GameDB.getDB().getData()
-    let users = await Promise.all(
-      data.user.map(async (user) => {
-        const structureMap =
-          (await StructureService.getStructures(user.id)) || {}
-        let totalLevel = 0
-        let maxLevel = 0
-        const energyStorage = structureMap.energyStorage
-        const metalStorage = structureMap.metalStorage
-        const deuteriumStorage = structureMap.deuteriumStorage
-        const solarPlant = structureMap.solarPlant
-        const fusionPlant = structureMap.fusionPlant
-        const store =
-          (energyStorage?.store || 0) +
-          (metalStorage?.store || 0) +
-          (deuteriumStorage?.store || 0)
-        const elecProd =
-          (solarPlant?.elecProd || 0) + (fusionPlant?.elecProd || 0)
-        Object.values(structureMap).forEach((structure) => {
-          totalLevel += structure.level || 0
-          maxLevel = Math.max(maxLevel, structure.level || 0)
-        })
-        return {
-          id: user.id,
-          username: user.username,
-          lastOnlineTime: user.lastOnlineTime,
-          activeTime: user.activeTime,
-          store,
-          totalLevel,
-          maxLevel,
-          elecProd,
-        }
-      }),
-    )
-    users = users.sort((a, b) => b.elecProd - a.elecProd)
+    const users = data.user.map((user) => {
+      const userData = data.userDataMap[user.id]
+      const store =
+        Object.values(userData?.planets || {}).reduce(
+          (prev, cur) =>
+            prev +
+            Object.keys(cur.resources).reduce((p, res) => {
+              if (res === ResourceType.Electricity) {
+                return p
+              }
+              return p + cur.resources[res as ResourceType]!.amount
+            }, 0),
+          0,
+        ) || 0
+      const { totalLevel, maxLevel } = Object.values(
+        userData?.planets || {},
+      ).reduce(
+        (prev, cur) => {
+          const totalLevel =
+            prev.totalLevel +
+            Object.values(cur.structures).reduce((p, c) => p + c.level, 0)
+          const maxLevel = Math.max(
+            prev.maxLevel,
+            ...Object.values(cur.structures).map((c) => c.level),
+          )
+          return { totalLevel, maxLevel }
+        },
+        { totalLevel: 0, maxLevel: 0 },
+      )
+      const elecProd = Object.values(userData?.planets || {}).reduce(
+        (prev, cur) => {
+          return prev + (cur.resources.electricity?.capacity ?? 0)
+        },
+        0,
+      )
+
+      return {
+        id: user.id,
+        username: user.username,
+        lastOnlineTime: user.lastOnlineTime,
+        activeTime: user.activeTime,
+        store,
+        totalLevel,
+        maxLevel,
+        elecProd,
+      }
+    })
+
+    users.sort((a, b) => b.elecProd - a.elecProd)
     return Result.success(users)
   }
 

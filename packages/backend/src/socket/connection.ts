@@ -1,8 +1,12 @@
 import { UserModel } from '@star-angry/db'
 import jwt from 'jsonwebtoken'
 import { Server } from 'socket.io'
-import { messageEventHandler, userEventHandler } from './event'
-import { structureEventHandler } from './event/structure'
+import {
+  messageEventHandler,
+  userEventHandler,
+  structureEventHandler,
+  gameEventHandler,
+} from './event'
 
 const users: Map<string, Partial<UserModel>> = new Map()
 
@@ -22,6 +26,7 @@ export const createConnection = (io: Server) => {
     }
 
     userEventHandler(socket, io)
+    gameEventHandler(socket, io)
     structureEventHandler(socket, io)
     messageEventHandler(socket, io)
 

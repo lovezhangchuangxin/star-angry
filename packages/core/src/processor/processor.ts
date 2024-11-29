@@ -1,16 +1,32 @@
-import { getIntentHandler } from './intents'
+import { StructureConfigs } from '../config'
+import { getOperationHandler } from '../structure'
+import { UserDataMap } from '../utils'
 
-export const processor = (intent: any, userObject: any) => {
-  const { objectId, type } = intent
-  const object = userObject[objectId]
-  if (!object) {
+export const processor = (
+  params: {
+    userId: string
+    planetId: string
+    structureId: string
+    operation: string
+  },
+  userDataMap: UserDataMap,
+) => {
+  const { userId, planetId, structureId, operation } = params
+  if (!userId || !planetId || !structureId || !operation) {
     return false
   }
 
-  const handler = getIntentHandler(object, type)
-  if (!handler) {
+  // 以 _ 开头的操作为私有的操作，不允许用户调用
+  if (operation.includes('_')) {
+    return false
+  }
+  const operationHanlder = getOperationHandler(structureId, operation)
+  if (!operationHanlder) {
     return false
   }
 
-  return handler(object as any, Object.values(userObject))
+  const planetData = userDataMap[userId].planets[planetId]
+  const data = planetData.structures[structureId]
+
+  return operationHanlder?.(params, data, StructureConfigs, planetData)
 }

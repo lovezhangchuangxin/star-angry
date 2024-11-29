@@ -1,15 +1,7 @@
-import {
-  DeuteriumStorage,
-  EnergyStorage,
-  MetalStorage,
-  SolarPlant,
-  Structure,
-  structuresMap,
-} from '@star-angry/core'
 import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
-import { UseDataMap, UserModel } from './model/user'
 import { Mutex } from './AsyncLock'
+import { initPlanet } from '@star-angry/core'
 
 const mutex = new Mutex()
 export class GameDB extends DB {
@@ -39,13 +31,12 @@ export class GameDB extends DB {
         this.dataCache = this.initData()
       }
       const data = this.dataCache
-      if (!data.userData) {
-        data.userData = {}
+      if (!data.userDataMap) {
+        data.userDataMap = {}
       }
       if (!data.messages) {
         data.messages = {}
       }
-      this.processUserData(data.user, data.userData)
       return this.dataCache
     } finally {
       mutex.unlock()
@@ -57,48 +48,41 @@ export class GameDB extends DB {
     this.set('game', JSON.stringify(data))
   }
 
-  processUserData(
-    users: UserModel[],
-    userDataMap: UseDataMap,
-    newPlayer = false,
-  ) {
-    users.forEach(({ id }) => {
-      const userData = userDataMap[id] || {}
-      if (!userData?.structure) {
-        userData.structure = {
-          energyStorage: new EnergyStorage({ level: 0, store: 1000 }),
-          metalStorage: new MetalStorage({ level: 0, store: 1000 }),
-          deuteriumStorage: new DeuteriumStorage({ level: 0, store: 0 }),
-          solarPlant: new SolarPlant(),
-        }
-      } else if (!newPlayer) {
-        // 初始化建筑
-        Object.keys(userData.structure).forEach((key) => {
-          let structure =
-            userData.structure[key as keyof typeof userData.structure]
-          if (!structure) {
-            return
-          }
-          if (!(structure instanceof Structure)) {
-            structure = new structuresMap[key as keyof typeof structuresMap](
-              structure as any,
-            )
-          }
-          userData.structure[key as keyof typeof userData.structure] =
-            structure as any
-        })
-      }
-      userData.updateTime = Date.now()
-      userDataMap[id] = userData
-    })
-    this.saveData()
+  async addUser(userId: string) {
+    const data = await this.getData()
+    if (data.userDataMap[userId]) return
+    data.userDataMap[userId] = {
+      globals: {
+        money: 0,
+        xnc: 0,
+      },
+      planets: {
+        0: {
+          name: '星球1',
+          level: 1,
+          speed: 0,
+          position: {
+            x: 0,
+            y: 0,
+          },
+          targetPosition: {
+            x: 0,
+            y: 0,
+          },
+          resources: {},
+          structures: {},
+        },
+      },
+    }
+    initPlanet(data.userDataMap[userId].planets[0])
   }
 
   initData() {
     return {
+      version: '0.0.1',
       user: [],
       messages: {},
-      userData: {},
+      userDataMap: {},
     } as GameModel
   }
 
@@ -116,7 +100,7 @@ export class GameDB extends DB {
         this.set('game', JSON.stringify(this.dataCache))
         console.log('autoSave')
       },
-      1000 * 60 * 5,
+      1000 * 60 * 10,
     )
   }
 }

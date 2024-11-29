@@ -1,5 +1,3 @@
-import { structuresMap } from '@star-angry/core'
-
 export interface UserModel {
   /**
    * 用户 id
@@ -42,20 +40,4 @@ export interface UserModel {
 export enum Role {
   USER,
   ADMIN,
-}
-
-export interface UseDataMap {
-  [userId: string]: UserDataModel
-}
-
-export interface UserDataModel {
-  structure: {
-    [type in keyof typeof structuresMap]?: InstanceType<
-      (typeof structuresMap)[type]
-    >
-  }
-  /**
-   * 更新时间
-   */
-  updateTime: number
 }
