@@ -37,9 +37,14 @@
             <div v-if="structure.id === 'solarPlant'">
               <el-row class="structure-desc">
                 产电量:
-                <NumberFormat
-                  :value="(structure as ProducerData).produceSpeed?.electricity"
-                />
+                <template v-if="isRunning(structure as ProducerData)">
+                  <NumberFormat
+                    :value="
+                      (structure as ProducerData).produceSpeed?.electricity
+                    "
+                  />
+                </template>
+                <template v-else>0</template>
               </el-row>
               <el-progress
                 v-if="electricityTotal >= electricityUsed"
@@ -62,55 +67,74 @@
             <div v-else-if="structure.id === 'planetaryEngine'">
               <el-row class="structure-desc">
                 产电量:
-                <NumberFormat
-                  :value="(structure as ProducerData).produceSpeed?.electricity"
-                />
-                <span class="elec-used">
-                  (耗氢量:
-                  {{
-                    (structure as ProducerData).consumeSpeed?.deuterium || 0
-                  }})
-                </span>
+                <template v-if="isRunning(structure as ProducerData)">
+                  <NumberFormat
+                    :value="
+                      (structure as ProducerData).produceSpeed?.electricity
+                    "
+                  />
+                  <span class="elec-used">
+                    (耗氢量:
+                    {{
+                      (structure as ProducerData).consumeSpeed?.deuterium || 0
+                    }})
+                  </span>
+                </template>
+                <template v-else>0</template>
               </el-row>
               <el-progress
                 :text-inside="true"
                 :stroke-width="20"
                 :percentage="100"
-                :format="() => (structure.level ? '产电中' : '停止运转')"
+                :format="
+                  () =>
+                    isRunning(structure as ProducerData) ? '产电中' : '停止运转'
+                "
                 :indeterminate="true"
-                :duration="structure.level ? 10 : 0"
-                :striped="!!structure.level"
-                :striped-flow="!!structure.level"
-                :color="structure.level ? '#87C025' : '#C22139'"
+                :duration="isRunning(structure as ProducerData) ? 10 : 0"
+                :striped="isRunning(structure as ProducerData)"
+                :striped-flow="isRunning(structure as ProducerData)"
+                :color="
+                  isRunning(structure as ProducerData) ? '#87C025' : '#C22139'
+                "
               />
             </div>
             <div v-else-if="StructureConfigs[structure.id].type === 'producer'">
               <el-row class="structure-desc">
                 产量:
-                <NumberFormat
-                  :value="
-                    Object.values(
-                      (structure as ProducerData).produceSpeed || {},
-                    )[0]
-                  "
-                />/s
-                <span class="elec-used">
-                  (耗电量:
-                  {{
-                    (structure as ProducerData).consumeSpeed?.electricity || 0
-                  }})
-                </span>
+                <template v-if="isRunning(structure as ProducerData)">
+                  <NumberFormat
+                    :value="
+                      Object.values(
+                        (structure as ProducerData).produceSpeed || {},
+                      )[0]
+                    "
+                  />/s
+                  <span class="elec-used">
+                    (耗电量:
+                    {{
+                      (structure as ProducerData).consumeSpeed?.electricity ||
+                      0
+                    }})
+                  </span>
+                </template>
+                <template v-else>0/s</template>
               </el-row>
               <el-progress
                 :text-inside="true"
                 :stroke-width="20"
                 :percentage="100"
-                :format="() => (structure.level ? '生产中' : '停止运转')"
+                :format="
+                  () =>
+                    isRunning(structure as ProducerData) ? '生产中' : '停止运转'
+                "
                 :indeterminate="true"
-                :duration="structure.level ? 10 : 0"
-                :striped="!!structure.level"
-                :striped-flow="!!structure.level"
-                :color="structure.level ? '#87C025' : '#C22139'"
+                :duration="isRunning(structure as ProducerData) ? 10 : 0"
+                :striped="isRunning(structure as ProducerData)"
+                :striped-flow="isRunning(structure as ProducerData)"
+                :color="
+                  isRunning(structure as ProducerData) ? '#87C025' : '#C22139'
+                "
               />
             </div>
             <div v-else-if="StructureConfigs[structure.id].type === 'storage'">
@@ -372,6 +396,11 @@ const canUpgrade = (structure: AllStructureData): boolean => {
   }
 
   return true
+}
+
+// 是否运行中
+const isRunning = (structure: ProducerData): boolean => {
+  return !!structure.level && !structure.pause
 }
 </script>
 
