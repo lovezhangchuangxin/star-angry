@@ -114,3 +114,14 @@ export interface StructureOperationObject {
 export type ResourceNumberMap = {
   [resourceId in ResourceType]?: number
 }
+
+/**
+ * 建筑操作参数
+ */
+export interface StructureOperationParams {
+  userId: string
+  planetId: string
+  structureId: string
+  operation: string
+  data?: any
+}

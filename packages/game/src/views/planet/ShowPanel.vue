@@ -27,7 +27,11 @@
                   />
                 </div>
                 <el-tag type="info" color="#613e3b" effect="dark">
-                  lv.{{ structure.level }}
+                  {{
+                    ['defense'].includes(StructureConfigs[structure.id].type)
+                      ? `数量：${(structure as DefenseData).amount || 0}`
+                      : `lv.${structure.level}`
+                  }}
                 </el-tag>
               </el-row>
             </div>
@@ -186,7 +190,24 @@
           </div>
           <template #footer>
             <div class="button-group">
+              <el-input-number
+                v-if="['defense'].includes(StructureConfigs[structure.id].type)"
+                v-model="buildNumbers[structure.id]"
+                :min="1"
+              />
               <el-button
+                v-if="['defense'].includes(StructureConfigs[structure.id].type)"
+                @click="() => buildStructure(structure.id)"
+                type="primary"
+                round
+                dark
+                :disabled="!buildNumbers[structure.id]"
+                color="#41bfda"
+              >
+                建造
+              </el-button>
+              <el-button
+                v-else
                 @click="() => upgradeStructure(structure.id)"
                 type="primary"
                 round
@@ -206,7 +227,7 @@
 
 <script setup lang="ts">
 import { computed, ref, toRefs, watchEffect } from 'vue'
-import NumberFormat from '@/components/number/NumberFormat.vue'
+import { ElScrollbar, ElRow, ElCol, ElCard } from 'element-plus'
 import {
   AllStructureData,
   isResourceEnough,
@@ -218,17 +239,17 @@ import {
   BaseStructureOrder,
   UserData,
   StructureType,
+  DefenseStructureConfigs,
+  DefenseData,
+  StructureOperationParams,
 } from '@star-angry/core'
+import NumberFormat from '@/components/number/NumberFormat.vue'
 
 interface ShowPanelProps {
   userData?: UserData
   types: StructureType[]
   addOperation: (
-    params: {
-      planetId: string
-      structureId: string
-      operation: string
-    },
+    params: Omit<StructureOperationParams, 'userId'>,
     successMsg: string,
     errorMsg: string,
   ) => void
@@ -239,6 +260,11 @@ const { userData, types, addOperation } = toRefs(props)
 const planetId = ref('')
 const planetData = ref<PlanetData>()
 const structures = ref<AllStructureData[]>([])
+const buildNumbers = ref<Record<string, number>>({})
+
+Object.keys(DefenseStructureConfigs).forEach((key) => {
+  buildNumbers.value[key] = 0
+})
 
 // 已经使用的电力
 const electricityUsed = computed(() => {
@@ -284,6 +310,7 @@ const upgradeStructure = (id: string) => {
   )
 }
 
+// 切换建筑的暂停状态
 const togglePause = (id: string) => {
   addOperation.value(
     {
@@ -293,6 +320,24 @@ const togglePause = (id: string) => {
     },
     '操作成功',
     '操作失败',
+  )
+}
+
+// 建造指定数量的建筑
+const buildStructure = (id: string) => {
+  const amount = buildNumbers.value[id]
+  if (!amount) {
+    return
+  }
+  addOperation.value(
+    {
+      planetId: planetId.value,
+      structureId: id,
+      operation: 'build',
+      data: { require: amount },
+    },
+    '建造成功',
+    '建造失败',
   )
 }
 
@@ -397,6 +442,7 @@ const isRunning = (structure: ProducerData): boolean => {
 
     .button-group {
       display: flex;
+      gap: 10px;
 
       button {
         flex: 1;

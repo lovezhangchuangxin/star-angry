@@ -1,19 +1,14 @@
-import { processor } from '../../../../core/src'
+import { processor, StructureOperationParams } from '@star-angry/core'
+import { GameDB } from '@star-angry/db'
 import { ErrorCode } from '../../error/ErrorCode'
 import { GameError } from '../../error/GameError'
-import { GameDB } from '@star-angry/db'
 
 export default class StructureService {
   /**
    * 添加操作
    */
-  static async addOperation(params: {
-    userId: string
-    planetId: string
-    structureId: string
-    operation: string
-  }) {
-    const { userId, planetId, structureId, operation } = params
+  static async addOperation(params: StructureOperationParams) {
+    const { userId } = params
     const data = await GameDB.getDB().getData()
     const userDataMap = data.userDataMap
     const userData = userDataMap[userId]

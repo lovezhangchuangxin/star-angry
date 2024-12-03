@@ -8,10 +8,19 @@
           :add-operation="addOperation"
         />
       </el-tab-pane>
+
       <el-tab-pane label="科技建设" name="technology">
         <ShowPanel
           :user-data="userData"
           :types="['technology']"
+          :add-operation="addOperation"
+        />
+      </el-tab-pane>
+
+      <el-tab-pane label="防御设施" name="defense">
+        <ShowPanel
+          :user-data="userData"
+          :types="['defense']"
           :add-operation="addOperation"
         />
       </el-tab-pane>
@@ -29,6 +38,7 @@ import {
   PlanetData,
   BaseStructureOrder,
   UserData,
+  StructureOperationParams,
 } from '@star-angry/core'
 import ShowPanel from './ShowPanel.vue'
 
@@ -86,11 +96,7 @@ const getMyData = () => {
 
 // 添加操作
 const addOperation = (
-  params: {
-    planetId: string
-    structureId: string
-    operation: string
-  },
+  params: Omit<StructureOperationParams, 'userId'>,
   successMsg: string,
   errorMsg: string,
 ) => {

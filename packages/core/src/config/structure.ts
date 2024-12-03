@@ -1,4 +1,5 @@
 import { StructureConfig } from '../structure/types'
+import { AttackType } from './combat'
 import { ResourceType } from './resource'
 
 /**
@@ -253,12 +254,148 @@ export const TechnologyStructureConfigs: StructureConfig = {
   },
 }
 
+/**
+ * 防御建筑
+ */
+export const DefenseStructureConfigs: StructureConfig = {
+  'standard-tower': {
+    id: 'standard-tower',
+    name: '普通炮塔',
+    description: '普通炮塔',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 15000,
+      metal: 5000,
+    }),
+    health: 1000,
+    shield: 500,
+    attack: {
+      [AttackType.Ballistic]: 100,
+    },
+  },
+  'heavy-tower': {
+    id: 'heavy-tower',
+    name: '重型炮塔',
+    description: '重型炮塔',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 100000,
+      metal: 50000,
+    }),
+    health: 3000,
+    shield: 2000,
+    attack: {
+      [AttackType.Ballistic]: 1000,
+    },
+  },
+  'missile-launcher': {
+    id: 'missile-launcher',
+    name: '导弹发射器',
+    description: '导弹发射器',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 300000,
+      metal: 200000,
+    }),
+    health: 10000,
+    shield: 10000,
+    attack: {
+      [AttackType.Missile]: 5000,
+    },
+  },
+  'ion-cannon': {
+    id: 'ion-cannon',
+    name: '离子炮',
+    description: '离子炮',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 50000,
+      metal: 100000,
+    }),
+    health: 2000,
+    shield: 2000,
+    attack: {
+      [AttackType.Ion]: 2000,
+    },
+  },
+  'plasma-cannon': {
+    id: 'plasma-cannon',
+    name: '等离子炮',
+    description: '等离子炮',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 80000,
+      metal: 200000,
+    }),
+    health: 8000,
+    shield: 8000,
+    attack: {
+      [AttackType.Plasma]: 3000,
+    },
+  },
+  'light-laser-tower': {
+    id: 'light-laser-tower',
+    name: '轻型激光塔',
+    description: '轻型激光塔',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 5000,
+      metal: 1000,
+    }),
+    health: 100,
+    shield: 50,
+    attack: {
+      [AttackType.Laser]: 10,
+    },
+  },
+  'heavy-laser-tower': {
+    id: 'heavy-laser-tower',
+    name: '重型激光塔',
+    description: '重型激光塔',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 50000,
+      metal: 10000,
+    }),
+    health: 300,
+    shield: 200,
+    attack: {
+      [AttackType.Laser]: 400,
+    },
+  },
+  'small-shield': {
+    id: 'small-shield',
+    name: '小型护盾',
+    description: '小型护盾',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 10000000,
+      metal: 5000000,
+    }),
+    health: 10000,
+    shield: 50000,
+  },
+  'large-shield': {
+    id: 'large-shield',
+    name: '大型护盾',
+    description: '大型护盾',
+    type: 'defense',
+    getUpgradeCost: () => ({
+      energy: 100000000,
+      metal: 500000000,
+    }),
+    health: 100000,
+    shield: 500000,
+  },
+}
+
 export const StructureConfigs: StructureConfig = {
   ...BaseStructureConfigs,
   ...TechnologyStructureConfigs,
+  ...DefenseStructureConfigs,
 }
 
-// 建筑在前端的展示顺序，数字越小越靠前
+// 基地建筑在前端的展示顺序，数字越小越靠前
 export const BaseStructureOrder: {
   [structureId: string]: number
 } = {
