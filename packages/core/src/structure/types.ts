@@ -83,9 +83,19 @@ export interface ProducerConfig extends StructureBaseConfig {
 }
 
 /**
+ * 科技类型建筑配置
+ */
+export interface TechnologyConfig extends StructureBaseConfig {
+  type: 'technology'
+}
+
+/**
  * 所有类型的建筑配置
  */
-export type AllStructureConfig = StorageConfig | ProducerConfig
+export type AllStructureConfig =
+  | StorageConfig
+  | ProducerConfig
+  | TechnologyConfig
 
 /**
  * 建筑类型
@@ -118,7 +128,7 @@ export interface StructureData {
   /**
    * 上次更新的时间
    */
-  lastUpdateTime: number
+  lastUpdateTime?: number
 }
 
 /**
@@ -141,6 +151,11 @@ export interface ProducerData extends StructureData {
 }
 
 /**
+ * 科技类型建筑数据
+ */
+export interface TechnologyData extends StructureData {}
+
+/**
  * 所有类型的建筑数据
  */
-export type AllStructureData = StorageData | ProducerData
+export type AllStructureData = StorageData | ProducerData | TechnologyData

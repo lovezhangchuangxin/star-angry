@@ -1,4 +1,4 @@
-import { StructureOperationObject } from '../utils/types'
+import { StructureOperationObject } from '../utils'
 import { StructureBaseOperation } from './base'
 import { StorageConfig } from './types'
 

@@ -1,7 +1,10 @@
 import { StructureConfig } from '../structure/types'
 import { ResourceType } from './resource'
 
-export const StructureConfigs: StructureConfig = {
+/**
+ * 基地建筑
+ */
+export const BaseStructureConfigs: StructureConfig = {
   solarPlant: {
     id: 'solarPlant',
     name: '太阳能电站',
@@ -132,10 +135,131 @@ export const StructureConfigs: StructureConfig = {
     }),
     priority: 120,
   },
-} as const
+}
+
+/**
+ * 科技建筑
+ */
+export const TechnologyStructureConfigs: StructureConfig = {
+  'spy-technology': {
+    id: 'spy-technology',
+    name: '间谍技术',
+    description: '间谍技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'computer-technology': {
+    id: 'computer-technology',
+    name: '计算机技术',
+    description: '计算机技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'weapons-technology': {
+    id: 'weapons-technology',
+    name: '武器技术',
+    description: '武器技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'shield-technology': {
+    id: 'shield-technology',
+    name: '护盾技术',
+    description: '护盾技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'armor-technology': {
+    id: 'armor-technology',
+    name: '装甲技术',
+    description: '装甲技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'energy-technology': {
+    id: 'energy-technology',
+    name: '能量技术',
+    description: '能量技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'hyperspace-technology': {
+    id: 'hyperspace-technology',
+    name: '超空间技术',
+    description: '超空间技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'combustion-technology': {
+    id: 'combustion-technology',
+    name: '燃烧技术',
+    description: '燃烧技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'laser-technology': {
+    id: 'laser-technology',
+    name: '激光技术',
+    description: '激光技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'ion-technology': {
+    id: 'ion-technology',
+    name: '离子技术',
+    description: '离子技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+  'plasma-technology': {
+    id: 'plasma-technology',
+    name: '等离子技术',
+    description: '等离子技术',
+    type: 'technology',
+    getUpgradeCost: (level) => ({
+      energy: Math.floor(100 * Math.pow(1.5, level)),
+      metal: Math.floor(200 * Math.pow(1.5, level)),
+    }),
+  },
+}
+
+export const StructureConfigs: StructureConfig = {
+  ...BaseStructureConfigs,
+  ...TechnologyStructureConfigs,
+}
 
 // 建筑在前端的展示顺序，数字越小越靠前
-export const StructureOrder: {
+export const BaseStructureOrder: {
   [structureId: string]: number
 } = {
   metalStorage: 1,

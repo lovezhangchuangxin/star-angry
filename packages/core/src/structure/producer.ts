@@ -1,6 +1,5 @@
 import { ResourceType } from '../config/resource'
-import { isStorageFull } from '../utils'
-import { StructureOperationObject } from '../utils/types'
+import { isStorageFull, StructureOperationObject } from '../utils'
 import { StructureBaseOperation } from './base'
 import { ProducerConfig, ProducerData } from './types'
 
