@@ -9,8 +9,16 @@ export const DefenseOperation: StructureOperationObject = {
   /**
    * 初始化
    */
-  _init(_, data, structureConfigs, planetData) {
-    if (!StructureBaseOperation._init(_, data, structureConfigs, planetData)) {
+  _init(_, data, structureConfigs, planetData, userDataMap) {
+    if (
+      !StructureBaseOperation._init(
+        _,
+        data,
+        structureConfigs,
+        planetData,
+        userDataMap,
+      )
+    ) {
       return false
     }
     return true
