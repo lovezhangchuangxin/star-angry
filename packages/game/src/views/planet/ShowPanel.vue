@@ -15,7 +15,11 @@
             <div class="card-header">
               <el-row justify="space-between">
                 <div>
-                  <el-text class="structure-name" size="large">
+                  <el-text
+                    class="structure-name"
+                    size="large"
+                    @click="detailDialogRef?.openDialog(structure)"
+                  >
                     {{ StructureConfigs[structure.id].name }}
                   </el-text>
                   <el-switch
@@ -170,21 +174,34 @@
             <el-row class="structure-desc">
               <el-row class="upgrade-desc">
                 <el-col :span="24">
-                  <el-text type="info">
-                    {{ `${structure.level ? '升级' : '建造'}需求:` }}
-                  </el-text>
+                  <el-text type="info">升级需求</el-text>
                 </el-col>
-                <el-col
-                  :span="24"
-                  v-for="(value, key) in StructureConfigs[
-                    structure.id
-                  ].getUpgradeCost(structure.level)"
-                  :key="key"
-                >
-                  <el-text type="info">
-                    {{ ResourceName[key] }}: <NumberFormat :value="value" />
-                  </el-text>
-                </el-col>
+                <template v-if="preDependSatisfy(structure)">
+                  <el-col
+                    :span="24"
+                    v-for="(value, key) in StructureConfigs[
+                      structure.id
+                    ].getUpgradeCost(structure.level)"
+                    :key="key"
+                  >
+                    <el-text type="info">
+                      {{ ResourceName[key] }}: <NumberFormat :value="value" />
+                    </el-text>
+                  </el-col>
+                </template>
+                <template v-else>
+                  <el-col
+                    :span="12"
+                    v-for="[key, value] in Object.entries(
+                      StructureConfigs[structure.id].preDepend!,
+                    )"
+                    :key="key"
+                  >
+                    <el-text type="info">
+                      {{ StructureConfigs[key].name }}: lv.{{ value }}
+                    </el-text>
+                  </el-col>
+                </template>
               </el-row>
             </el-row>
           </div>
@@ -223,6 +240,8 @@
       </el-col>
     </el-row>
   </el-scrollbar>
+
+  <DetailDialog ref="detailDialogRef" />
 </template>
 
 <script setup lang="ts">
@@ -244,6 +263,7 @@ import {
   StructureOperationParams,
 } from '@star-angry/core'
 import NumberFormat from '@/components/number/NumberFormat.vue'
+import DetailDialog from './DetailDialog.vue'
 
 interface ShowPanelProps {
   userData?: UserData
@@ -261,6 +281,7 @@ const planetId = ref('')
 const planetData = ref<PlanetData>()
 const structures = ref<AllStructureData[]>([])
 const buildNumbers = ref<Record<string, number>>({})
+const detailDialogRef = ref<InstanceType<typeof DetailDialog>>()
 
 Object.keys(DefenseStructureConfigs).forEach((key) => {
   buildNumbers.value[key] = 0
@@ -371,6 +392,23 @@ const calcProcessColor = (structure: AllStructureData): string => {
   return processStatus[level]
 }
 
+// 升级所需的前置建筑是否满足
+const preDependSatisfy = (structure: AllStructureData): boolean => {
+  if (!planetData.value) return false
+
+  const config = StructureConfigs[structure.id]
+  // 获取升级依赖的前置建筑
+  const preStructure = config.preDepend
+  // 检查这些建筑的等级是否满足
+  if (!preStructure) return true
+  for (const [id, level] of Object.entries(preStructure)) {
+    if (planetData.value.structures[id].level < level) {
+      return false
+    }
+  }
+  return true
+}
+
 // 能否升级
 const canUpgrade = (structure: AllStructureData): boolean => {
   if (!planetData.value) return false
@@ -381,15 +419,9 @@ const canUpgrade = (structure: AllStructureData): boolean => {
     return false
   }
 
-  // 获取升级依赖的前置建筑
-  const preStructure = config.preDepend
-  // 检查这些建筑的等级是否满足
-  if (preStructure) {
-    for (const [id, level] of Object.entries(preStructure)) {
-      if (planetData.value.structures[id].level < level) {
-        return false
-      }
-    }
+  // 前置建筑是否满足
+  if (!preDependSatisfy(structure)) {
+    return false
   }
 
   // 获取升级所需资源
@@ -418,6 +450,7 @@ const isRunning = (structure: ProducerData): boolean => {
     margin: 10px 0;
     .structure-name {
       color: #cbc0aa;
+      cursor: pointer;
     }
     .pause-btn {
       --el-switch-on-color: #13ce66;
@@ -437,6 +470,7 @@ const isRunning = (structure: ProducerData): boolean => {
     }
 
     .upgrade-desc {
+      width: 100%;
       height: 70px;
     }
 

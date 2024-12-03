@@ -211,6 +211,9 @@ export const TechnologyStructureConfigs: StructureConfig = {
       energy: Math.floor(100 * Math.pow(1.5, level)),
       metal: Math.floor(200 * Math.pow(1.5, level)),
     }),
+    preDepend: {
+      'computer-technology': 5,
+    },
   },
   'combustion-technology': {
     id: 'combustion-technology',
@@ -251,6 +254,10 @@ export const TechnologyStructureConfigs: StructureConfig = {
       energy: Math.floor(100 * Math.pow(1.5, level)),
       metal: Math.floor(200 * Math.pow(1.5, level)),
     }),
+    preDepend: {
+      'combustion-technology': 3,
+      'laser-technology': 3,
+    },
   },
 }
 
