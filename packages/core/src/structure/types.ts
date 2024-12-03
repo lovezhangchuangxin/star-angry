@@ -1,4 +1,5 @@
 import { ResourceType } from '../config/resource'
+import { UserDataMap } from '../utils'
 
 /**
  * 建筑 id
@@ -75,7 +76,10 @@ export interface ProducerConfig extends StructureBaseConfig {
   /**
    * 获取产出资源速度
    */
-  getProduceSpeed?: (level: number) => Partial<Record<ResourceType, number>>
+  getProduceSpeed?: (
+    level: number,
+    userDataMap: UserDataMap,
+  ) => Partial<Record<ResourceType, number>>
   /**
    * 获取消耗资源速度
    */

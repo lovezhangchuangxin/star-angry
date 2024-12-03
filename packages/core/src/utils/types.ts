@@ -99,6 +99,7 @@ export type StructureOperationFunc = (
   data: AllStructureData,
   structureConfigs: StructureConfig,
   planetData: PlanetData,
+  userDataMap: UserDataMap,
 ) => boolean
 
 /**

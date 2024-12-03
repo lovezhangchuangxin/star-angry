@@ -11,8 +11,16 @@ export const ProducerOperation: StructureOperationObject = {
   /**
    * 初始化
    */
-  _init(_, data, structureConfigs, planetData) {
-    if (!StructureBaseOperation._init(_, data, structureConfigs, planetData)) {
+  _init(_, data, structureConfigs, planetData, userDataMap) {
+    if (
+      !StructureBaseOperation._init(
+        _,
+        data,
+        structureConfigs,
+        planetData,
+        userDataMap,
+      )
+    ) {
       return false
     }
     return true
@@ -21,23 +29,35 @@ export const ProducerOperation: StructureOperationObject = {
   /**
    * 更新
    */
-  _update(_, data, structureConfigs, planetData) {
-    return ProducerOperation._produce(_, data, structureConfigs, planetData)
+  _update(_, data, structureConfigs, planetData, userDataMap) {
+    return ProducerOperation._produce(
+      _,
+      data,
+      structureConfigs,
+      planetData,
+      userDataMap,
+    )
   },
 
   /**
    * 升级
    */
-  upgrade(_, data, structureConfigs, planetData) {
+  upgrade(_, data, structureConfigs, planetData, userDataMap) {
     if (
-      !StructureBaseOperation.upgrade(_, data, structureConfigs, planetData)
+      !StructureBaseOperation.upgrade(
+        _,
+        data,
+        structureConfigs,
+        planetData,
+        userDataMap,
+      )
     ) {
       return false
     }
 
     // 升级成功，更新资源产量和消耗
     const config = structureConfigs[data.id] as ProducerConfig
-    const produceSpeed = config.getProduceSpeed?.(data.level) ?? {}
+    const produceSpeed = config.getProduceSpeed?.(data.level, userDataMap) ?? {}
     const consumeSpeed = config.getConsumeSpeed?.(data.level) ?? {}
     const structureData = data as ProducerData
     structureData.produceSpeed = produceSpeed

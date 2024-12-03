@@ -9,7 +9,7 @@ export const loop = (userDataMap: UserDataMap) => {
   Object.values(userDataMap).forEach((user) => {
     Object.values(user.planets).forEach((planet) => {
       // 建筑生产
-      produce(planet)
+      produce(planet, userDataMap)
     })
   })
 }
@@ -17,7 +17,7 @@ export const loop = (userDataMap: UserDataMap) => {
 /**
  * 建筑生产
  */
-const produce = (planet: PlanetData) => {
+const produce = (planet: PlanetData, userDataMap: UserDataMap) => {
   // 每 Tick 开始先把电能置为 0，后续再加上建筑的电能产出
   planet.resources.electricity = {
     amount: 0,
@@ -25,8 +25,15 @@ const produce = (planet: PlanetData) => {
   }
 
   // 按优先级处理建筑
-  const structureIds = Object.keys(planet.structures)
+  const allStructureIdSet = new Set(Object.keys(StructureConfigs))
+  const structureIds = Object.keys(planet.structures).filter((id) =>
+    allStructureIdSet.has(id),
+  )
+
   structureIds.sort((a, b) => {
+    if (!StructureConfigs[a] || !StructureConfigs[b]) {
+      console.log(Object.keys(StructureConfigs))
+    }
     return (
       (StructureConfigs[a].priority ?? 1000) -
       (StructureConfigs[b].priority ?? 1000)
@@ -51,6 +58,7 @@ const produce = (planet: PlanetData) => {
           structure,
           StructureConfigs,
           planet,
+          userDataMap,
         )
         if (result && (structure as ProducerData).consumeSpeed?.electricity) {
           changeResourcesList.push(params.changeResources as any)

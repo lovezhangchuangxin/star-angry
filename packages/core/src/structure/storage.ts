@@ -9,9 +9,15 @@ export const StorageOperation: StructureOperationObject = {
   /**
    * 初始化
    */
-  _init(params, data, structureConfigs, planetData) {
+  _init(params, data, structureConfigs, planetData, userDataMap) {
     if (
-      !StructureBaseOperation._init(params, data, structureConfigs, planetData)
+      !StructureBaseOperation._init(
+        params,
+        data,
+        structureConfigs,
+        planetData,
+        userDataMap,
+      )
     ) {
       return false
     }
@@ -29,9 +35,15 @@ export const StorageOperation: StructureOperationObject = {
   /**
    * 升级
    */
-  upgrade(_, data, structureConfigs, planetData) {
+  upgrade(_, data, structureConfigs, planetData, userDataMap) {
     if (
-      !StructureBaseOperation.upgrade(_, data, structureConfigs, planetData)
+      !StructureBaseOperation.upgrade(
+        _,
+        data,
+        structureConfigs,
+        planetData,
+        userDataMap,
+      )
     ) {
       return false
     }
