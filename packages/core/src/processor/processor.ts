@@ -23,5 +23,11 @@ export const processor = (
   const planetData = userDataMap[userId].planets[planetId]
   const data = planetData.structures[structureId]
 
-  return operationHanlder?.(params, data, StructureConfigs, planetData)
+  return operationHanlder?.(
+    params,
+    data,
+    StructureConfigs,
+    planetData,
+    userDataMap,
+  )
 }
