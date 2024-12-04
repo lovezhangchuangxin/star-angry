@@ -56,7 +56,7 @@ export const ProducerOperation: StructureOperationObject = {
 
     // 升级成功，更新资源产量和消耗
     const config = structureConfigs[data.id] as ProducerConfig
-    const produceSpeed = config.getProduceSpeed?.(data.level, userDataMap) ?? {}
+    const produceSpeed = config.getProduceSpeed?.(data.level) ?? {}
     const consumeSpeed = config.getConsumeSpeed?.(data.level) ?? {}
     const structureData = data as ProducerData
     structureData.produceSpeed = produceSpeed

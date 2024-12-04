@@ -55,7 +55,6 @@ const migrate = async () => {
               ;(structureMap[newStructureId] as ProducerData).produceSpeed =
                 StructureConfigs[newStructureId].getProduceSpeed?.(
                   oldStructureData.level,
-                  data.userDataMap,
                 ) || {}
               ;(structureMap[newStructureId] as ProducerData).consumeSpeed =
                 StructureConfigs[newStructureId].getConsumeSpeed?.(
