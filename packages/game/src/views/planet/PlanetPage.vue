@@ -39,6 +39,7 @@ import {
   BaseStructureOrder,
   UserData,
   StructureOperationParams,
+  StructureConfigs,
 } from '@star-angry/core'
 import ShowPanel from './ShowPanel.vue'
 
@@ -49,6 +50,7 @@ const planetData = ref<PlanetData>()
 const structures = ref<AllStructureData[]>([])
 const timerId = ref<number | null>(null)
 const activeName = ref('base')
+const allStructureIdSet = new Set(Object.keys(StructureConfigs))
 
 onMounted(() => {
   socket.value = io('', {
@@ -83,11 +85,11 @@ const getMyData = () => {
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
       planetData.value = data.planets[planetId.value]
-      structures.value = Object.values(
-        data.planets[planetId.value].structures,
-      ).sort((a, b) => {
-        return BaseStructureOrder[a.id] - BaseStructureOrder[b.id]
-      })
+      structures.value = Object.values(data.planets[planetId.value].structures)
+        .filter((s) => allStructureIdSet.has(s.id))
+        .sort((a, b) => {
+          return BaseStructureOrder[a.id] - BaseStructureOrder[b.id]
+        })
     } else {
       toast.error(response.msg)
     }
