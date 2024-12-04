@@ -1,104 +1,39 @@
-import { lcg } from '@star-angry/shared'
+import { isClose } from '@star-angry/shared'
+import { Noise2D } from './noise'
 
 /**
  * 宇宙地图
  */
-export class Universe {
+export class UniverseMap {
   /**
-   * 伪随机数生成器，种子相同，生成的随机数序列相同
+   * 噪声
    */
-  public random: () => number
-
-  // 区块星系
-  public chunkGalaxyMap: Map<number, Galaxy> = new Map()
+  public noise: Noise2D
 
   public constructor(
     public seed: number,
     public chunkSize: number = 256,
   ) {
-    this.random = lcg(seed)
+    this.noise = new Noise2D(seed, 10, 1)
   }
 
   /**
-   * 获取区块中的星系
+   * 获取区块中的星球
    */
-  public getGalaxy(chunkId: number): Galaxy {
-    if (this.chunkGalaxyMap.has(chunkId)) {
-      return this.chunkGalaxyMap.get(chunkId)!
-    }
-
-    // 先找到区块中心
-    let [x, y] = this.getChunkCoord(chunkId)
-    x += Math.floor(this.chunkSize / 2)
-    y += Math.floor(this.chunkSize / 2)
-    // 在生成星系中心，即区块中心附近
-    const galaxyX = x + Math.floor(((this.random() - 0.5) * this.chunkSize) / 2)
-    const galaxyY = y + Math.floor(((this.random() - 0.5) * this.chunkSize) / 2)
-
-    // 暂时一个区块只有一个星系，星系整体范围在区块内，半径大约为区块半径的 1/4
-    const size = Math.floor((this.random() / 4 + 0.1) * this.chunkSize)
-    const galaxy = new Galaxy(
-      this.getBlockId(galaxyX, galaxyY),
-      galaxyX,
-      galaxyY,
-      size,
-    )
-
-    // 生成星球
-    const planetCount = Math.floor(this.random() * 5 + 5)
-    const planets: Planet[] = []
-
-    const genPlanet = () => {
-      const planetX = galaxyX + Math.floor(this.random() * size)
-      const planetY = galaxyY + Math.floor(this.random() * size)
-      const planetSize = Math.floor((this.random() / planetCount + 0.1) * size)
-      const color = `#${Math.floor(this.random() * 0xffffff).toString(16)}`
-      return new Planet(
-        this.getBlockId(planetX, planetY),
-        planetX,
-        planetY,
-        planetSize,
-        color,
-      )
-    }
-
-    let check = 0
-    for (let i = 0; i < planetCount; i++) {
-      const planet = genPlanet()
-      // 防止星球重叠
-      if (
-        planets.some(
-          (p) =>
-            Math.abs(p.x - planet.x) < p.size + planet.size &&
-            Math.abs(p.y - planet.y) < p.size + planet.size,
-        )
-      ) {
-        if (check++ > 10) {
-          check = 0
-          continue
+  public getPlanets(chunkId: number) {
+    const planets: [x: number, y: number][] = []
+    const [lx, ly] = this.getChunkCoord(chunkId)
+    const rx = lx + this.chunkSize
+    const ry = ly + this.chunkSize
+    for (let x = lx; x < rx; x++) {
+      for (let y = ly; y < ry; y++) {
+        const noise = this.noise.getBuff(x, y)
+        if (isClose(noise, 0, 0.0001)) {
+          planets.push([x, y])
         }
-        i--
-        continue
       }
-      planets.push(planet)
     }
-
-    galaxy.planets = planets
-    this.chunkGalaxyMap.set(chunkId, galaxy)
-    return galaxy
-  }
-
-  /**
-   * 获取地图可视区中的星系
-   */
-  public getGalaxies(lx: number, ly: number, rx: number, ry: number): Galaxy[] {
-    const chunkIds = this.getChunks(lx, ly, rx, ry)
-    const galaxies: Galaxy[] = []
-    for (const chunkId of chunkIds) {
-      const galaxy = this.getGalaxy(chunkId)
-      galaxies.push(galaxy)
-    }
-    return galaxies
+    return planets
   }
 
   /**
@@ -111,12 +46,13 @@ export class Universe {
    */
   public getChunks(lx: number, ly: number, rx: number, ry: number): number[] {
     const chunkIds: number[] = []
-    for (let x = lx; x <= rx; x += this.chunkSize) {
-      for (let y = ly; y <= ry; y += this.chunkSize) {
+    for (let x = lx; x < rx + this.chunkSize; x += this.chunkSize) {
+      for (let y = ly; y < ry + this.chunkSize; y += this.chunkSize) {
         const chunkId = this.getChunkId(x, y)
         chunkIds.push(chunkId)
       }
     }
+
     return chunkIds
   }
 
@@ -152,41 +88,4 @@ export class Universe {
     const [x, y] = this.getBlockCoord(chunkId)
     return [x * this.chunkSize, y * this.chunkSize]
   }
-}
-
-/**
- * 星系
- */
-export class Galaxy {
-  // 星球
-  public planets: Planet[] = []
-
-  /**
-   * @param x 星系中心 x 坐标
-   * @param y 星系中心 y 坐标
-   * @param seed 随机种子
-   */
-  public constructor(
-    public id: number,
-    public x: number,
-    public y: number,
-    public size: number,
-  ) {}
-
-  addPlanet(planet: Planet) {
-    this.planets.push(planet)
-  }
-}
-
-/**
- * 星球
- */
-export class Planet {
-  public constructor(
-    public id: number,
-    public x: number,
-    public y: number,
-    public size: number,
-    public color: string = '#000',
-  ) {}
 }

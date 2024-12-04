@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import Konva from 'konva'
 import { onMounted, toRefs } from 'vue'
-import { Universe } from '@star-angry/core'
+import { UniverseMap } from '@star-angry/core'
 import { throttle } from '@star-angry/shared'
 
 interface GameMapProps {
@@ -14,7 +14,7 @@ interface GameMapProps {
 
 const props = defineProps<GameMapProps>()
 const { seed } = toRefs(props)
-const universe = new Universe(seed.value)
+const universeMap = new UniverseMap(seed.value)
 
 onMounted(() => {
   const stage = new Konva.Stage({
@@ -22,6 +22,10 @@ onMounted(() => {
     width: window.innerWidth,
     height: window.innerHeight,
     draggable: true,
+    scale: {
+      x: 6,
+      y: 6,
+    },
   })
 
   const layer = new Konva.Layer()
@@ -37,43 +41,92 @@ onMounted(() => {
     stage.height(window.innerHeight)
     render(stage, layer)
   })
+
+  window.addEventListener('wheel', (e) => {
+    const pointerPos = stage.getPointerPosition()
+    if (!pointerPos) {
+      return
+    }
+
+    const scaleBy = 1.1
+    const oldScale = stage.scaleX()
+    const mousePointTo = {
+      x: pointerPos.x / oldScale - stage.x() / oldScale,
+      y: pointerPos.y / oldScale - stage.y() / oldScale,
+    }
+
+    let newScale = e.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    newScale = Math.min(10, Math.max(1, newScale))
+    stage.scale({ x: newScale, y: newScale })
+
+    const newPos = {
+      x: -(mousePointTo.x - pointerPos.x / newScale) * newScale,
+      y: -(mousePointTo.y - pointerPos.y / newScale) * newScale,
+    }
+    stage.position(newPos)
+    render(stage, layer)
+  })
 })
 
 const render = throttle(
   (stage: Konva.Stage, layer: Konva.Layer) => {
     // 先获取可视区域的坐标范围
-    const [x, y, width, height] = [
-      -stage.x(),
-      -stage.y(),
-      stage.width(),
-      stage.height(),
-    ]
+    const scale = stage.scaleX()
+    const x = -stage.x() / scale
+    const y = -stage.y() / scale
+    const width = stage.width() / scale
+    const height = stage.height() / scale
 
-    const galaxies = universe.getGalaxies(x, y, x + width, y + height)
-    galaxies.forEach((galaxy) => {
+    const chunkIds = universeMap.getChunks(x, y, x + width, y + height)
+    chunkIds.forEach((chunkId) => {
       // 先判断是否已经存在
-      const galaxyGroup = layer.find(`#${galaxy.id}`)[0] as Konva.Circle
-      if (galaxyGroup) {
+      const chunkGroup = layer.find(`#${chunkId}`)[0]
+      if (chunkGroup) {
         return
       }
 
       const group = new Konva.Group({
-        id: `#${galaxy.id}`,
+        id: chunkId.toString(),
       })
 
-      galaxy.planets.forEach((planet) => {
+      const planets = universeMap.getPlanets(chunkId)
+
+      planets.forEach((planet) => {
+        const planetX = planet[0]
+        const planetY = planet[1]
+
         const circle = new Konva.Circle({
-          x: planet.x,
-          y: planet.y,
-          radius: planet.size,
-          fill: planet.color,
+          x: planetX,
+          y: planetY,
+          radius: 2,
+          fill: '#e1d2f4',
           stroke: 'black',
-          strokeWidth: 1,
+          strokeWidth: 0.1,
         })
-        group.add(circle)
+        const text = new Konva.Text({
+          x: planetX,
+          y: planetY,
+          text: `${planetX},${planetY}(keqing)`,
+          fontSize: 3,
+          fontFamily: 'Calibri',
+          fill: 'green',
+        })
+        text.offset({
+          x: -3,
+          y: 1,
+        })
+        group.add(circle, text)
       })
 
       layer.add(group)
+    })
+
+    // 移除不在可视区域的chunk
+    const chunkIdsSet = new Set(chunkIds.map((id) => id.toString()))
+    layer.children.forEach((child) => {
+      if (!chunkIdsSet.has(child.id())) {
+        child.destroy()
+      }
     })
   },
   200,
