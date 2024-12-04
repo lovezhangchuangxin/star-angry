@@ -16,7 +16,7 @@
     </div>
 
     <div class="right">
-      <span>{{ userStore.username }}</span>
+      <Avatar />
       <span
         v-if="userStore.role === 1"
         class="admin"
@@ -35,6 +35,7 @@ import { CloseBold, Expand } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import NavSide from './NavSide.vue'
 import { useRouter } from 'vue-router'
+import Avatar from './Avatar.vue'
 
 const userStore = useUserStore()
 const router = useRouter()
