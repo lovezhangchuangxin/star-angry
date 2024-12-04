@@ -1,5 +1,15 @@
 <template>
   <div class="planet">
+    <div class="resource">
+      <span v-for="{ type, name, amount } in allResources" :key="type">
+        <span class="label">{{ name }}</span>
+        <span>
+          <span>{{ amount < 0 ? ' -' : '' }}</span>
+          <NumberFormat :value="Math.abs(amount)" />
+        </span>
+      </span>
+    </div>
+
     <el-tabs v-model="activeName">
       <el-tab-pane label="基地建筑" name="base">
         <ShowPanel
@@ -29,10 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus'
 import { io, Socket } from 'socket.io-client'
-import { message as toast } from '@/utils/message'
 import {
   AllStructureData,
   PlanetData,
@@ -40,7 +49,11 @@ import {
   UserData,
   StructureOperationParams,
   StructureConfigs,
+  ResourceName,
+  ResourceType,
 } from '@star-angry/core'
+import { message as toast } from '@/utils/message'
+import NumberFormat from '@/components/number/NumberFormat.vue'
 import ShowPanel from './ShowPanel.vue'
 
 const socket = ref<Socket | null>(null)
@@ -51,6 +64,24 @@ const structures = ref<AllStructureData[]>([])
 const timerId = ref<number | null>(null)
 const activeName = ref('base')
 const allStructureIdSet = new Set(Object.keys(StructureConfigs))
+
+const allResources = computed(() => {
+  if (!planetData.value) {
+    return []
+  }
+  const res: { type: string; name: string; amount: number }[] = []
+  for (const [type, item] of Object.entries(planetData.value.resources)) {
+    const name = ResourceName[type as ResourceType]
+    if (type === 'electricity') {
+      // 注意电能的 amount 表示已使用的电能，是负数
+      res.push({ type, name, amount: item.capacity + item.amount })
+    } else {
+      res.push({ type, name, amount: item.amount })
+    }
+  }
+
+  return res
+})
 
 onMounted(() => {
   socket.value = io('', {
@@ -129,6 +160,23 @@ const addOperation = (
 .planet {
   height: 100%;
   padding: 10px 40px;
+
+  .resource {
+    display: flex;
+    gap: 20px;
+    padding: 2px 0;
+    font-size: 12px;
+    color: #b99ddc;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    .label {
+      padding: 0 5px;
+      border: 1px solid #e9ba5d;
+      border-radius: 5px;
+      color: #e9ba5d;
+    }
+  }
 }
 
 :deep(.el-tabs) {
