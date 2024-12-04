@@ -24,7 +24,7 @@ const produce = (planet: PlanetData, userDataMap: UserDataMap) => {
     capacity: 0,
   }
 
-  // 按优先级处理建筑
+  // 处理建筑
   const allStructureIdSet = new Set(Object.keys(StructureConfigs))
   const structureIds = Object.keys(planet.structures).filter((id) =>
     allStructureIdSet.has(id),

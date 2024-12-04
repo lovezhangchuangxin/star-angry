@@ -227,6 +227,7 @@ const planetId = ref('')
 const planetData = ref<PlanetData>()
 const structures = ref<AllStructureData[]>([])
 const timerId = ref<number | null>(null)
+const allStructureIdSet = new Set(Object.keys(StructureConfigs))
 
 // 已经使用的电力
 const electricityUsed = computed(() => {
@@ -274,11 +275,11 @@ const getMyData = () => {
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
       planetData.value = data.planets[planetId.value]
-      structures.value = Object.values(
-        data.planets[planetId.value].structures,
-      ).sort((a, b) => {
-        return StructureOrder[a.id] - StructureOrder[b.id]
-      })
+      structures.value = Object.values(data.planets[planetId.value].structures)
+        .filter((s) => allStructureIdSet.has(s.id))
+        .sort((a, b) => {
+          return StructureOrder[a.id] - StructureOrder[b.id]
+        })
     } else {
       toast.error(response.msg)
     }
