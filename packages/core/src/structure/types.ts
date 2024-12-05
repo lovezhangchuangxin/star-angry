@@ -1,6 +1,5 @@
 import { AttackType } from '../config/combat'
 import { ResourceType } from '../config/resource'
-import { UserDataMap } from '../utils'
 
 /**
  * 建筑 id
