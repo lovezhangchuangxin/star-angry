@@ -6,12 +6,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted, provide, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { io, Socket } from 'socket.io-client'
 import { UserApi } from '@/api'
 import { useUserStore } from '@/store'
 // import NavHeader from '@/layouts/components/NavHeader.vue'
 
+const socket = ref<Socket | null>(null)
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
@@ -22,6 +24,8 @@ const refreshToken = async () => {
   //   localStorage.setItem('token', res.data)
   // }
 }
+
+provide('socket', socket)
 
 onMounted(() => {
   // 初次加载时，请求用户信息
@@ -39,12 +43,25 @@ onMounted(() => {
     if (route.path === '/login') {
       router.replace('/')
     }
+
+    socket.value = io('', {
+      query: {
+        token: localStorage.getItem('token'),
+      },
+      path: '/ws',
+    })
+
+    provide('socket', socket)
   })
 
   // 每隔一定时间刷新 token
   setInterval(refreshToken, 5 * 60 * 1000)
   // 上线时立即刷新一次 token
   setTimeout(refreshToken, 10 * 1000)
+})
+
+onUnmounted(() => {
+  socket.value?.disconnect()
 })
 </script>
 

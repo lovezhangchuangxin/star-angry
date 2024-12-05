@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io'
+import { StructureOperationParams } from '@star-angry/core'
 import { Result } from '../../../utils/result'
 import { ErrorCode } from '../../../error/ErrorCode'
 import StructureService from '../../../service/structure'
@@ -9,14 +10,7 @@ export const structureEventHandler = (socket: Socket, io: Server) => {
   // 添加操作
   socket.on(
     'addOperation',
-    async (
-      params: {
-        planetId: string
-        structureId: string
-        operation: string
-      },
-      callback,
-    ) => {
+    async (params: Omit<StructureOperationParams, 'userId'>, callback) => {
       const userId = socket.userId
       if (!userId) {
         return callback(Result.error(ErrorCode.PARAM_ERROR))

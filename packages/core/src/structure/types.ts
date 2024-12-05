@@ -1,3 +1,4 @@
+import { AttackType } from '../config/combat'
 import { ResourceType } from '../config/resource'
 import { UserDataMap } from '../utils'
 
@@ -76,10 +77,7 @@ export interface ProducerConfig extends StructureBaseConfig {
   /**
    * 获取产出资源速度
    */
-  getProduceSpeed?: (
-    level: number,
-    userDataMap: UserDataMap,
-  ) => Partial<Record<ResourceType, number>>
+  getProduceSpeed?: (level: number) => Partial<Record<ResourceType, number>>
   /**
    * 获取消耗资源速度
    */
@@ -87,9 +85,41 @@ export interface ProducerConfig extends StructureBaseConfig {
 }
 
 /**
+ * 科技类型建筑配置
+ */
+export interface TechnologyConfig extends StructureBaseConfig {
+  type: 'technology'
+}
+
+/**
+ * 防御设施建造配置
+ */
+export interface DefenseConfig extends StructureBaseConfig {
+  type: 'defense'
+  /**
+   * 生命值
+   */
+  health: number
+  /**
+   * 护盾
+   */
+  shield: number
+  /**
+   * 攻击力
+   */
+  attack?: {
+    [type in AttackType]?: number
+  }
+}
+
+/**
  * 所有类型的建筑配置
  */
-export type AllStructureConfig = StorageConfig | ProducerConfig
+export type AllStructureConfig =
+  | StorageConfig
+  | ProducerConfig
+  | TechnologyConfig
+  | DefenseConfig
 
 /**
  * 建筑类型
@@ -122,7 +152,7 @@ export interface StructureData {
   /**
    * 上次更新的时间
    */
-  lastUpdateTime: number
+  lastUpdateTime?: number
 }
 
 /**
@@ -145,6 +175,25 @@ export interface ProducerData extends StructureData {
 }
 
 /**
+ * 科技类型建筑数据
+ */
+export interface TechnologyData extends StructureData {}
+
+/**
+ * 防御设施建筑数据
+ */
+export interface DefenseData extends StructureData {
+  /**
+   * 数量
+   */
+  amount: number
+}
+
+/**
  * 所有类型的建筑数据
  */
-export type AllStructureData = StorageData | ProducerData
+export type AllStructureData =
+  | StorageData
+  | ProducerData
+  | TechnologyData
+  | DefenseData

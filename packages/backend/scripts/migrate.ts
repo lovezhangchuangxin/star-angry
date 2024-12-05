@@ -7,6 +7,7 @@ import {
   ResourceType,
   StorageConfig,
   StructureConfigs,
+  UniverseMap,
 } from '@star-angry/core'
 
 /**
@@ -55,7 +56,6 @@ const migrate = async () => {
               ;(structureMap[newStructureId] as ProducerData).produceSpeed =
                 StructureConfigs[newStructureId].getProduceSpeed?.(
                   oldStructureData.level,
-                  data.userDataMap,
                 ) || {}
               ;(structureMap[newStructureId] as ProducerData).consumeSpeed =
                 StructureConfigs[newStructureId].getConsumeSpeed?.(
@@ -111,10 +111,59 @@ const migrate = async () => {
               structures,
             },
           },
-        }
+        } as any
       })
 
       data.version = '0.0.1'
+    }
+
+    if (data.version === '0.0.1') {
+      if (!data.config) {
+        data.config = {
+          seed: 0.63,
+        }
+      }
+
+      const userDatas = Object.values(data.userDataMap)
+      const userPlanetCount = userDatas.reduce(
+        (count, userData) => count + Object.keys(userData.planets).length,
+        0,
+      )
+      // 一个区块放四个玩家的星球
+      const chunkNumber = Math.ceil(userPlanetCount / 4)
+      // 获取星球
+      const universeMap = new UniverseMap(data.config.seed)
+      // 取地图中心的区块范围半径
+      const radius = Math.floor(
+        (Math.ceil(Math.sqrt(chunkNumber)) * universeMap.chunkSize) / 2,
+      )
+      const chunks = universeMap.getChunks(-radius, -radius, radius, radius)
+      const planets = chunks
+        .map((chunkId) => universeMap.getPlanets(chunkId))
+        .flat()
+      const gap = Math.floor(planets.length / userPlanetCount)
+      let index = 0
+
+      userDatas.forEach((userData) => {
+        Object.keys(userData.planets).forEach((planetId) => {
+          const planet = userData.planets[planetId]
+          planet.id = planetId
+          // 重新分配一个
+          const newPlanet = planets[index]
+          planet.id = universeMap.getBlockId(...newPlanet).toString()
+          planet.position = newPlanet
+          userData.planets[planet.id] = planet
+          delete userData.planets[planetId]
+          index += gap
+
+          if (!(planet.targetPosition instanceof Array)) {
+            const { x: tx = 0, y: ty = 0 } = planet.targetPosition as any
+            planet.targetPosition = [tx, ty]
+          }
+        })
+      })
+
+      data.version = '0.0.2'
     }
 
     await GameDB.getDB().setData(data)

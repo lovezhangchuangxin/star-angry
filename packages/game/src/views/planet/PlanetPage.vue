@@ -1,225 +1,60 @@
 <template>
-  <el-scrollbar class="planet-scrollbar">
-    <el-row class="planet" :gutter="20" align="top">
-      <el-col
-        :xs="24"
-        :sm="12"
-        :md="12"
-        :lg="6"
-        :xl="4"
-        v-for="structure in structures"
-        :key="structure.id"
-      >
-        <el-card class="box-card">
-          <template #header>
-            <div class="card-header">
-              <el-row justify="space-between">
-                <div>
-                  <el-text class="structure-name" size="large">
-                    {{ StructureConfigs[structure.id].name }}
-                  </el-text>
-                  <el-switch
-                    v-if="StructureConfigs[structure.id].type === 'producer'"
-                    @click="() => togglePause(structure.id)"
-                    :model-value="!structure.pause"
-                    size="small"
-                    class="pause-btn"
-                  />
-                </div>
-                <el-tag type="info" color="#613e3b" effect="dark">
-                  lv.{{ structure.level }}
-                </el-tag>
-              </el-row>
-            </div>
-          </template>
+  <div class="planet">
+    <div class="resource">
+      <span v-for="{ type, name, amount } in allResources" :key="type">
+        <span class="label">{{ name }}</span>
+        <span>
+          <span>{{ amount < 0 ? ' -' : '' }}</span>
+          <NumberFormat :value="Math.abs(amount)" />
+        </span>
+      </span>
+    </div>
 
-          <div class="structure-body">
-            <div v-if="structure.id === 'solarPlant'">
-              <el-row class="structure-desc">
-                产电量:
-                <template v-if="isRunning(structure as ProducerData)">
-                  <NumberFormat
-                    :value="
-                      (structure as ProducerData).produceSpeed?.electricity
-                    "
-                  />
-                </template>
-                <template v-else>0</template>
-              </el-row>
-              <el-progress
-                v-if="electricityTotal >= electricityUsed"
-                :text-inside="true"
-                :stroke-width="20"
-                :percentage="calcEmptyPercentage()"
-                :format="() => electricityTotal - electricityUsed"
-                color="#CFCC38"
-              />
-              <el-progress
-                v-else
-                class="negative-process"
-                :text-inside="true"
-                :stroke-width="20"
-                :percentage="calcEmptyPercentage()"
-                :format="() => electricityTotal - electricityUsed"
-                color="#C22139"
-              />
-            </div>
-            <div v-else-if="structure.id === 'planetaryEngine'">
-              <el-row class="structure-desc">
-                产电量:
-                <template v-if="isRunning(structure as ProducerData)">
-                  <NumberFormat
-                    :value="
-                      (structure as ProducerData).produceSpeed?.electricity
-                    "
-                  />
-                  <span class="elec-used">
-                    (耗氢量:
-                    {{
-                      (structure as ProducerData).consumeSpeed?.deuterium || 0
-                    }})
-                  </span>
-                </template>
-                <template v-else>0</template>
-              </el-row>
-              <el-progress
-                :text-inside="true"
-                :stroke-width="20"
-                :percentage="100"
-                :format="
-                  () =>
-                    isRunning(structure as ProducerData) ? '产电中' : '停止运转'
-                "
-                :indeterminate="true"
-                :duration="isRunning(structure as ProducerData) ? 10 : 0"
-                :striped="isRunning(structure as ProducerData)"
-                :striped-flow="isRunning(structure as ProducerData)"
-                :color="
-                  isRunning(structure as ProducerData) ? '#87C025' : '#C22139'
-                "
-              />
-            </div>
-            <div v-else-if="StructureConfigs[structure.id].type === 'producer'">
-              <el-row class="structure-desc">
-                产量:
-                <template v-if="isRunning(structure as ProducerData)">
-                  <NumberFormat
-                    :value="
-                      Object.values(
-                        (structure as ProducerData).produceSpeed || {},
-                      )[0]
-                    "
-                  />/s
-                  <span class="elec-used">
-                    (耗电量:
-                    {{
-                      (structure as ProducerData).consumeSpeed?.electricity ||
-                      0
-                    }})
-                  </span>
-                </template>
-                <template v-else>0/s</template>
-              </el-row>
-              <el-progress
-                :text-inside="true"
-                :stroke-width="20"
-                :percentage="100"
-                :format="
-                  () =>
-                    isRunning(structure as ProducerData) ? '生产中' : '停止运转'
-                "
-                :indeterminate="true"
-                :duration="isRunning(structure as ProducerData) ? 10 : 0"
-                :striped="isRunning(structure as ProducerData)"
-                :striped-flow="isRunning(structure as ProducerData)"
-                :color="
-                  isRunning(structure as ProducerData) ? '#87C025' : '#C22139'
-                "
-              />
-            </div>
-            <div v-else-if="StructureConfigs[structure.id].type === 'storage'">
-              <el-row class="structure-desc">
-                储量:
-                <NumberFormat
-                  :value="
-                    planetData?.resources[
-                      (StructureConfigs[structure.id] as StorageConfig).resource
-                    ]?.amount
-                  "
-                />
-                /
-                <NumberFormat
-                  :value="
-                    planetData?.resources[
-                      (StructureConfigs[structure.id] as StorageConfig).resource
-                    ]?.capacity
-                  "
-                />
-              </el-row>
-              <el-progress
-                :text-inside="true"
-                :stroke-width="20"
-                :percentage="calcCapacityPercentage(structure)"
-                :status="calcProcessColor(structure)"
-              />
-            </div>
-            <el-row class="structure-desc">
-              <el-row>
-                <el-col :span="24">
-                  <el-text type="info">
-                    {{ `${structure.level ? '升级' : '建造'}需求:` }}
-                  </el-text>
-                </el-col>
-                <el-col
-                  :span="24"
-                  v-for="(value, key) in StructureConfigs[
-                    structure.id
-                  ].getUpgradeCost(structure.level)"
-                  :key="key"
-                >
-                  <el-text type="info">
-                    {{ ResourceName[key] }}: <NumberFormat :value="value" />
-                  </el-text>
-                </el-col>
-              </el-row>
-            </el-row>
-          </div>
-          <template #footer>
-            <div class="button-group">
-              <el-button
-                @click="() => upgradeStructure(structure.id)"
-                type="primary"
-                round
-                dark
-                :disabled="!canUpgrade(structure)"
-                :color="canUpgrade(structure) ? '#41bfda' : '#e45865'"
-              >
-                {{ `${structure.level ? '升级' : '建造'}` }}
-              </el-button>
-            </div>
-          </template>
-        </el-card>
-      </el-col>
-    </el-row>
-  </el-scrollbar>
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="基地建筑" name="base">
+        <ShowPanel
+          :user-data="userData"
+          :types="['producer', 'storage']"
+          :add-operation="addOperation"
+        />
+      </el-tab-pane>
+
+      <el-tab-pane label="科技建设" name="technology">
+        <ShowPanel
+          :user-data="userData"
+          :types="['technology']"
+          :add-operation="addOperation"
+        />
+      </el-tab-pane>
+
+      <el-tab-pane label="防御设施" name="defense">
+        <ShowPanel
+          :user-data="userData"
+          :types="['defense']"
+          :add-operation="addOperation"
+        />
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { ElTabs, ElTabPane } from 'element-plus'
 import { io, Socket } from 'socket.io-client'
-import { message as toast } from '@/utils/message'
-import NumberFormat from '@/components/number/NumberFormat.vue'
 import {
   AllStructureData,
-  isResourceEnough,
   PlanetData,
-  ProducerData,
-  ResourceName,
-  StorageConfig,
-  StructureConfigs,
-  StructureOrder,
+  BaseStructureOrder,
   UserData,
+  StructureOperationParams,
+  StructureConfigs,
+  ResourceName,
+  ResourceType,
 } from '@star-angry/core'
+import { message as toast } from '@/utils/message'
+import NumberFormat from '@/components/number/NumberFormat.vue'
+import ShowPanel from './ShowPanel.vue'
 
 const socket = ref<Socket | null>(null)
 const userData = ref<UserData>()
@@ -227,19 +62,25 @@ const planetId = ref('')
 const planetData = ref<PlanetData>()
 const structures = ref<AllStructureData[]>([])
 const timerId = ref<number | null>(null)
+const activeName = ref('base')
 const allStructureIdSet = new Set(Object.keys(StructureConfigs))
 
-// 已经使用的电力
-const electricityUsed = computed(() => {
-  const data = planetData.value?.resources.electricity
-  if (!data) return 0
-  return -data.amount
-})
-// 总电力
-const electricityTotal = computed(() => {
-  const data = planetData.value?.resources.electricity
-  if (!data) return 0
-  return data.capacity
+const allResources = computed(() => {
+  if (!planetData.value) {
+    return []
+  }
+  const res: { type: string; name: string; amount: number }[] = []
+  for (const [type, item] of Object.entries(planetData.value.resources)) {
+    const name = ResourceName[type as ResourceType]
+    if (type === 'electricity') {
+      // 注意电能的 amount 表示已使用的电能，是负数
+      res.push({ type, name, amount: item.capacity + item.amount })
+    } else {
+      res.push({ type, name, amount: item.amount })
+    }
+  }
+
+  return res
 })
 
 onMounted(() => {
@@ -274,11 +115,16 @@ const getMyData = () => {
       userData.value = data
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
+      if (!planetId.value) {
+        toast.error('请先挑选星球')
+        socket.value?.disconnect()
+        return
+      }
       planetData.value = data.planets[planetId.value]
       structures.value = Object.values(data.planets[planetId.value].structures)
         .filter((s) => allStructureIdSet.has(s.id))
         .sort((a, b) => {
-          return StructureOrder[a.id] - StructureOrder[b.id]
+          return BaseStructureOrder[a.id] - BaseStructureOrder[b.id]
         })
     } else {
       toast.error(response.msg)
@@ -286,38 +132,9 @@ const getMyData = () => {
   })
 }
 
-// 升级建筑
-const upgradeStructure = (id: string) => {
-  addOperation(
-    {
-      planetId: planetId.value,
-      structureId: id,
-      operation: 'upgrade',
-    },
-    '升级成功',
-    '升级失败',
-  )
-}
-
-const togglePause = (id: string) => {
-  addOperation(
-    {
-      planetId: planetId.value,
-      structureId: id,
-      operation: 'togglePause',
-    },
-    '操作成功',
-    '操作失败',
-  )
-}
-
 // 添加操作
 const addOperation = (
-  params: {
-    planetId: string
-    structureId: string
-    operation: string
-  },
+  params: Omit<StructureOperationParams, 'userId'>,
   successMsg: string,
   errorMsg: string,
 ) => {
@@ -342,126 +159,36 @@ const addOperation = (
       }
     })
 }
-
-// 储量百分比
-const calcCapacityPercentage = (structure: AllStructureData): number => {
-  const resource =
-    planetData.value?.resources[
-      (StructureConfigs[structure.id] as StorageConfig).resource
-    ]
-  if (!resource) return 0
-  return +Math.min(100, (resource.amount * 100) / resource.capacity).toFixed(2)
-}
-
-const calcEmptyPercentage = (): number => {
-  if (!electricityTotal.value && !electricityUsed.value) return 0
-  return +Math.min(
-    100,
-    Math.abs(
-      ((electricityTotal.value - electricityUsed.value) * 100) /
-        electricityTotal.value,
-    ),
-  ).toFixed(2)
-}
-
-// 储量进度条颜色
-const processStatus: string[] = ['success', '', '', 'warning', 'exception']
-const calcProcessColor = (structure: AllStructureData): string => {
-  const level = Math.ceil(
-    Math.max(0, calcCapacityPercentage(structure) - 60) / 10,
-  )
-  return processStatus[level]
-}
-
-// 能否升级
-const canUpgrade = (structure: AllStructureData): boolean => {
-  if (!planetData.value) return false
-
-  const config = StructureConfigs[structure.id]
-  // 是否已经是最大等级
-  if (config.maxLevel && structure.level >= config.maxLevel) {
-    return false
-  }
-
-  // 获取升级依赖的前置建筑
-  const preStructure = config.preDepend
-  // 检查这些建筑的等级是否满足
-  if (preStructure) {
-    for (const [id, level] of Object.entries(preStructure)) {
-      if (planetData.value.structures[id].level < level) {
-        return false
-      }
-    }
-  }
-
-  // 获取升级所需资源
-  const cost = config.getUpgradeCost(structure.level)
-  // 检查资源是否足够
-  if (!isResourceEnough(planetData.value.resources, cost)) {
-    return false
-  }
-
-  return true
-}
-
-// 是否运行中
-const isRunning = (structure: ProducerData): boolean => {
-  return !!structure.level && !structure.pause
-}
 </script>
 
 <style scoped lang="less">
 .planet {
-  padding: 20px 40px;
-  overflow: auto;
-  scrollbar-width: none;
+  height: 100%;
+  padding: 10px 40px;
 
-  .box-card {
-    margin: 10px 0;
-    .structure-name {
-      color: #cbc0aa;
-    }
-    .pause-btn {
-      --el-switch-on-color: #13ce66;
-      --el-switch-off-color: #ff4949;
-      margin-left: 10px;
-    }
+  .resource {
+    display: flex;
+    gap: 20px;
+    padding: 2px 0;
+    font-size: 12px;
+    color: #b99ddc;
+    overflow-x: auto;
+    scrollbar-width: none;
 
-    .structure-body {
-      height: 150px;
-      .structure-desc {
-        align-items: baseline;
-        margin: 10px 0;
-        .elec-used {
-          margin-left: 10px;
-          font-size: 12px;
-        }
-      }
-    }
-
-    .button-group {
-      display: flex;
-
-      button {
-        flex: 1;
-      }
+    .label {
+      padding: 0 5px;
+      border: 1px solid #e9ba5d;
+      border-radius: 5px;
+      color: #e9ba5d;
     }
   }
 }
-</style>
-<style lang="less">
-.el-scrollbar.planet-scrollbar {
-  .el-scrollbar__wrap {
-    overflow-x: hidden;
-    .el-scrollbar__view {
-      overflow-x: hidden;
-    }
-  }
+
+:deep(.el-tabs) {
+  height: 100%;
 }
-.el-progress.negative-process {
-  .el-progress-bar__inner {
-    left: auto;
-    right: 0;
-  }
+
+:deep(.el-tab-pane) {
+  height: 100%;
 }
 </style>

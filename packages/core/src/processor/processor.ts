@@ -1,14 +1,9 @@
 import { StructureConfigs } from '../config'
 import { getOperationHandler } from '../structure'
-import { UserDataMap } from '../utils'
+import { StructureOperationParams, UserDataMap } from '../utils'
 
 export const processor = (
-  params: {
-    userId: string
-    planetId: string
-    structureId: string
-    operation: string
-  },
+  params: StructureOperationParams,
   userDataMap: UserDataMap,
 ) => {
   const { userId, planetId, structureId, operation } = params

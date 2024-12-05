@@ -1,7 +1,9 @@
 import { StructureConfigs } from '../config'
 import { StructureOperationObject } from '../utils/types'
+import { DefenseOperation } from './defense'
 import { ProducerOperation } from './producer'
 import { StorageOperation } from './storage'
+import { TechnologyOperation } from './technology'
 import { StructureType } from './types'
 
 export * from './types'
@@ -11,6 +13,8 @@ export const StructureOperationMap: {
 } = {
   storage: StorageOperation,
   producer: ProducerOperation,
+  technology: TechnologyOperation,
+  defense: DefenseOperation,
 }
 
 /**
