@@ -4,7 +4,7 @@
       <span v-for="{ type, name, amount } in allResources" :key="type">
         <span class="label">{{ name }}</span>
         <span>
-          <span>{{ amount < 0 ? ' -' : '' }}</span>
+          <span>{{ amount < 0 ? ' -' : ' ' }}</span>
           <NumberFormat :value="Math.abs(amount)" />
         </span>
       </span>
