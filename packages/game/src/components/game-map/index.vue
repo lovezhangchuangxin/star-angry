@@ -66,7 +66,7 @@ onMounted(() => {
       y: pointerPos.y / oldScale - stage.y() / oldScale,
     }
 
-    let newScale = e.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy
+    let newScale = e.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy
     newScale = Math.min(10, Math.max(1, newScale))
     stage.scale({ x: newScale, y: newScale })
 
@@ -76,7 +76,7 @@ onMounted(() => {
     }
     stage.position(newPos)
     // 缩小才重新渲染，放大不用
-    if (e.deltaY < 0) {
+    if (e.deltaY > 0) {
       render(stage, layer)
     }
   })

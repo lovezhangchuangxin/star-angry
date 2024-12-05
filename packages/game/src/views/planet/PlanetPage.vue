@@ -85,6 +85,7 @@ const allResources = computed(() => {
 })
 
 onMounted(() => {
+  getMyData()
   timerId.value = setInterval(() => {
     getMyData()
   }, 1000) as unknown as number
