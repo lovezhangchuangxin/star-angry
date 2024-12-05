@@ -18,7 +18,6 @@ export const mapEventHandler = (socket: Socket, io: Server) => {
       await MapService.registerPlanet(userId, planetId)
       return callback(Result.success({}))
     } catch (error: unknown) {
-      console.error(error)
       if (error instanceof GameError) {
         return callback(Result.error(error.errorCode))
       }
@@ -40,7 +39,25 @@ export const mapEventHandler = (socket: Socket, io: Server) => {
         }),
       )
     } catch (error: unknown) {
-      console.error(error)
+      if (error instanceof GameError) {
+        return callback(Result.error(error.errorCode))
+      }
+    }
+  })
+
+  /**
+   * 获取我的所有星球
+   */
+  socket.on('getMyPlanets', async (callback) => {
+    const userId = socket.userId
+    if (!userId) {
+      return callback(Result.error(ErrorCode.PARAM_ERROR))
+    }
+
+    try {
+      const data = await MapService.getMyPlanets(userId)
+      return callback(Result.success(data))
+    } catch (error: unknown) {
       if (error instanceof GameError) {
         return callback(Result.error(error.errorCode))
       }

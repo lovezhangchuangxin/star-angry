@@ -9,6 +9,7 @@ import { Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
 import { PlanetData, UniverseMap } from '@star-angry/core'
 import { debounce } from '@star-angry/shared'
+import { ElMessageBox } from 'element-plus'
 
 interface MapObjectData {
   seed: number
@@ -24,10 +25,13 @@ interface MapObjectData {
 
 const socket = inject<Ref<Socket>>('socket')
 const mapObjectData = ref<MapObjectData>()
+const myPlanets = ref<Record<string, PlanetData>>()
 // 仅用于提供一些操作方法，不用于真实的地图渲染
 const blankMap = new UniverseMap(0)
 
 onMounted(() => {
+  getMyPlanets()
+
   const stage = new Konva.Stage({
     container: 'universe',
     width: window.innerWidth,
@@ -45,6 +49,35 @@ onMounted(() => {
   render(stage, layer)
   stage.on('dragmove', () => {
     render(stage, layer)
+  })
+
+  layer.on('mouseenter', function (evt) {
+    const target = evt.target
+    if (target.id().startsWith('planet') && target instanceof Konva.Circle) {
+      stage.container().style.cursor = 'pointer'
+    }
+  })
+
+  layer.on('mouseleave', function (evt) {
+    const target = evt.target
+    if (target.id().startsWith('planet') && target instanceof Konva.Circle) {
+      stage.container().style.cursor = 'default'
+    }
+  })
+
+  layer.on('dblclick', function (evt) {
+    const target = evt.target
+    if (target.id().startsWith('planet') && target instanceof Konva.Circle) {
+      if (!myPlanets.value) {
+        toast.warn('正在获取我的星球数据，请稍后再试')
+        return
+      }
+      if (Object.keys(myPlanets.value).length) {
+        return
+      }
+      const planetId = +target.id().split('-')[1]
+      registerPlanet(planetId.toString())
+    }
   })
 
   window.addEventListener('resize', () => {
@@ -102,6 +135,56 @@ const getMapObject = (
       } else if (response.code === 0) {
         mapObjectData.value = response.data
         callback(mapObjectData.value!)
+      } else {
+        toast.error(response.msg)
+      }
+    })
+}
+
+/**
+ * 获取我的星球
+ */
+const getMyPlanets = () => {
+  if (!socket?.value) {
+    return
+  }
+
+  socket.value.timeout(5000).emit('getMyPlanets', (err: any, response: any) => {
+    if (err) {
+      toast.error('获取我的星球失败')
+    } else if (response.code === 0) {
+      myPlanets.value = response.data
+      if (!Object.keys(myPlanets.value || {}).length) {
+        ElMessageBox.alert(
+          '您暂无星球，请在地图上挑选星球，双击该星球即可确认',
+          '',
+          {
+            autofocus: false,
+            confirmButtonText: '确认',
+          },
+        )
+      }
+    } else {
+      toast.error(response.msg)
+    }
+  })
+}
+
+/**
+ * 注册星球
+ */
+const registerPlanet = (planetId: string) => {
+  if (!socket?.value) {
+    return
+  }
+
+  socket.value
+    .timeout(5000)
+    .emit('registerPlanet', planetId, (err: any, response: any) => {
+      if (err) {
+        toast.error('注册星球失败')
+      } else if (response.code === 0) {
+        toast.success('注册星球成功')
       } else {
         toast.error(response.msg)
       }

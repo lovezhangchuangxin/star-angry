@@ -58,6 +58,30 @@ export default class MapService {
     planet.position = [x, y]
     userData.planets[planetId] = planet
     initPlanetData(planet, userDataMap)
+    if (!MapService.objectCache[originChunkId]) {
+      MapService.objectCache[originChunkId] = []
+    }
+    MapService.objectCache[originChunkId].push({
+      userId,
+      userName: data.user.find((user) => user.id === userId)?.username || '',
+      planet,
+    })
+    if (!MapService.originalPlanetIds[originChunkId]) {
+      MapService.originalPlanetIds[originChunkId] = new Set()
+    }
+    MapService.originalPlanetIds[originChunkId].add(+planetId)
+  }
+
+  /**
+   * 获取我的所有星球
+   */
+  static async getMyPlanets(userId: string) {
+    const data = await GameDB.getDB().getData()
+    const userData = data.userDataMap[userId]
+    if (!userData) {
+      throw new GameError(ErrorCode.USER_NOT_EXIST)
+    }
+    return userData.planets
   }
 
   /**

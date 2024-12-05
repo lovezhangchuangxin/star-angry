@@ -7,6 +7,8 @@ type Message = ((config: MessageParams) => void) & {
   error: (msg: string) => void
 } & {
   success: (msg: string) => void
+} & {
+  warn: (msg: string) => void
 }
 
 export const message: Message = (config: MessageParams) => {
@@ -33,5 +35,12 @@ message.success = function (msg: string) {
   message({
     message: msg,
     type: 'success',
+  })
+}
+
+message.warn = function (msg: string) {
+  message({
+    message: msg,
+    type: 'warning',
   })
 }

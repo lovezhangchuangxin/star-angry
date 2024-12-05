@@ -18,7 +18,6 @@ export const gameEventHandler = (socket: Socket, io: Server) => {
       UserService.onlineUser(userId)
       return callback(Result.success(data))
     } catch (error: unknown) {
-      console.error(error)
       if (error instanceof GameError) {
         return callback(Result.error(error.errorCode))
       }
