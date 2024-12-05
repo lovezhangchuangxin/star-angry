@@ -1,5 +1,6 @@
 import { init, loop } from '@star-angry/core'
 import { GameDB } from '@star-angry/db'
+import MapService from '../map'
 
 export default class GameService {
   /**
@@ -32,6 +33,7 @@ export default class GameService {
    */
   static async initData() {
     const data = await GameDB.getDB().getData()
+    MapService.init(data)
     init(data.userDataMap)
     console.log('initGameData')
   }

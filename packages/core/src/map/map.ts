@@ -27,13 +27,20 @@ export class UniverseMap {
     const ry = ly + this.chunkSize
     for (let x = lx; x < rx; x++) {
       for (let y = ly; y < ry; y++) {
-        const noise = this.noise.getBuff(x, y)
-        if (isClose(noise, 0, 0.0001)) {
+        if (this.isPlanet(x, y)) {
           planets.push([x, y])
         }
       }
     }
     return planets
+  }
+
+  /**
+   * 检查方块是否是星球
+   */
+  public isPlanet(x: number, y: number): boolean {
+    const noise = this.noise.getBuff(x, y)
+    return isClose(noise, 0, 0.0001)
   }
 
   /**

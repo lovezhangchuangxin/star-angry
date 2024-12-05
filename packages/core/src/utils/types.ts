@@ -33,6 +33,10 @@ export interface UserDataMap {
  */
 export interface PlanetData {
   /**
+   * 星球 id
+   */
+  id: string
+  /**
    * 星球名称
    */
   name: string
@@ -47,17 +51,11 @@ export interface PlanetData {
   /**
    * 当前坐标
    */
-  position: {
-    x: number
-    y: number
-  }
+  position: [x: number, y: number]
   /**
    * 目的地坐标
    */
-  targetPosition?: {
-    x: number
-    y: number
-  }
+  targetPosition?: [x: number, y: number]
   /**
    * 星球资源
    */

@@ -6,6 +6,7 @@ import {
   userEventHandler,
   structureEventHandler,
   gameEventHandler,
+  mapEventHandler,
 } from './event'
 
 const users: Map<string, Partial<UserModel>> = new Map()
@@ -27,6 +28,7 @@ export const createConnection = (io: Server) => {
 
     userEventHandler(socket, io)
     gameEventHandler(socket, io)
+    mapEventHandler(socket, io)
     structureEventHandler(socket, io)
     messageEventHandler(socket, io)
 

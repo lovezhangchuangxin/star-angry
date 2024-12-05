@@ -4,17 +4,28 @@
 
 <script setup lang="ts">
 import Konva from 'konva'
-import { onMounted, toRefs } from 'vue'
-import { UniverseMap } from '@star-angry/core'
+import { inject, onMounted, Ref, ref } from 'vue'
+import { Socket } from 'socket.io-client'
+import { message as toast } from '@/utils/message'
+import { PlanetData, UniverseMap } from '@star-angry/core'
 import { throttle } from '@star-angry/shared'
 
-interface GameMapProps {
+interface MapObjectData {
   seed: number
+  chunkObjects: {
+    [chunkId: number]: {
+      userId?: string
+      userName?: string
+      planet: PlanetData
+    }[]
+  }
+  occupiedPlanets: Record<number, number[]>
 }
 
-const props = defineProps<GameMapProps>()
-const { seed } = toRefs(props)
-const universeMap = new UniverseMap(seed.value)
+const socket = inject<Ref<Socket>>('socket')
+const mapObjectData = ref<MapObjectData>()
+// 仅用于提供一些操作方法，不用于真实的地图渲染
+const blankMap = new UniverseMap(0)
 
 onMounted(() => {
   const stage = new Konva.Stage({
@@ -71,6 +82,33 @@ onMounted(() => {
   })
 })
 
+/**
+ * 获取指定区块的物体
+ */
+const getMapObject = (
+  chunkIds: number[],
+  callback: (mapObjectData: MapObjectData) => void,
+) => {
+  if (!socket?.value) {
+    return
+  }
+  socket.value
+    .timeout(5000)
+    .emit('getObjectsFromChunks', chunkIds, (err: any, response: any) => {
+      if (err) {
+        toast.error('获取游戏数据失败')
+      } else if (response.code === 0) {
+        mapObjectData.value = response.data
+        callback(mapObjectData.value!)
+      } else {
+        toast.error(response.msg)
+      }
+    })
+}
+
+/**
+ * 渲染可视区的物体
+ */
 const render = throttle(
   (stage: Konva.Stage, layer: Konva.Layer) => {
     // 先获取可视区域的坐标范围
@@ -80,53 +118,63 @@ const render = throttle(
     const width = stage.width() / scale
     const height = stage.height() / scale
 
-    const chunkIds = universeMap.getChunks(
+    const chunkIds = blankMap.getChunks(
       Math.floor(x - width / 3),
       Math.floor(y - width / 3),
       Math.floor(x + (width * 4) / 3),
       Math.floor(y + (height * 4) / 3),
     )
-    chunkIds.forEach((chunkId) => {
-      // 先判断是否已经存在
-      const chunkGroup = layer.find(`#${chunkId}`)[0]
-      if (chunkGroup) {
-        return
-      }
 
-      const group = new Konva.Group({
-        id: chunkId.toString(),
+    getMapObject(chunkIds, (mapObjectData) => {
+      const { seed, chunkObjects, occupiedPlanets } = mapObjectData
+      const universeMap = new UniverseMap(seed)
+
+      chunkIds.forEach((chunkId) => {
+        // 先判断是否已经存在
+        const chunkGroup = layer.find(`#${chunkId}`)[0]
+        if (chunkGroup) {
+          return
+        }
+
+        const group = new Konva.Group({
+          id: chunkId.toString(),
+        })
+
+        const planets = universeMap.getPlanets(chunkId)
+        const occupiedPlanetSets = new Set(occupiedPlanets[chunkId])
+        planets.forEach((planet) => {
+          const planetX = planet[0]
+          const planetY = planet[1]
+          const planetId = universeMap.getBlockId(planetX, planetY)
+
+          if (occupiedPlanetSets?.has(planetId)) {
+            return
+          }
+
+          const [circle, text] = getPlanetObject(
+            layer,
+            planetId,
+            planetX,
+            planetY,
+          )
+          group.add(circle, text)
+        })
+
+        chunkObjects[chunkId]?.forEach((data) => {
+          const { planet, userId, userName } = data
+          const [circle, text] = getPlanetObject(
+            layer,
+            +planet.id,
+            planet.position[0],
+            planet.position[1],
+            userName,
+          )
+          circle.fill(userId ? '#f4d2d2' : '#e1d2f4')
+          group.add(circle, text)
+        })
+
+        layer.add(group)
       })
-
-      const planets = universeMap.getPlanets(chunkId)
-
-      planets.forEach((planet) => {
-        const planetX = planet[0]
-        const planetY = planet[1]
-
-        const circle = new Konva.Circle({
-          x: planetX,
-          y: planetY,
-          radius: 2,
-          fill: '#e1d2f4',
-          stroke: 'black',
-          strokeWidth: 0.1,
-        })
-        const text = new Konva.Text({
-          x: planetX,
-          y: planetY,
-          text: `${planetX},${planetY}(keqing)`,
-          fontSize: 3,
-          fontFamily: 'Calibri',
-          fill: 'green',
-        })
-        text.offset({
-          x: -3,
-          y: 1,
-        })
-        group.add(circle, text)
-      })
-
-      layer.add(group)
     })
 
     // 移除不在可视区域的chunk
@@ -140,6 +188,39 @@ const render = throttle(
   200,
   true,
 )
+
+function getPlanetObject(
+  layer: Konva.Layer,
+  planetId: number,
+  planetX: number,
+  planetY: number,
+  username?: string,
+) {
+  const circle =
+    layer.find<Konva.Circle>(`#planet-${planetId}`)[0] ??
+    new Konva.Circle({
+      id: `planet-${planetId}`,
+      radius: 2,
+      fill: '#e1d2f4',
+      stroke: 'black',
+      strokeWidth: 0.1,
+    })
+  circle.x(planetX)
+  circle.y(planetY)
+
+  const text =
+    layer.find<Konva.Text>(`#planet-${planetId}-label`)[0] ??
+    new Konva.Text({
+      id: `planet-${planetId}-label`,
+      text: `${planetX},${planetY}${username ? `(${username})` : ''}`,
+      fontSize: 3,
+      fontFamily: 'Calibri',
+      fill: username ? 'purple' : 'green',
+    })
+  text.x(planetX + 3)
+  text.y(planetY - 1)
+  return [circle, text]
+}
 </script>
 
 <style scoped lang="less">

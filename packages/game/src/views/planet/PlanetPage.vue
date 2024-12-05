@@ -115,6 +115,11 @@ const getMyData = () => {
       userData.value = data
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
+      if (!planetId.value) {
+        toast.error('请先挑选星球')
+        socket.value?.disconnect()
+        return
+      }
       planetData.value = data.planets[planetId.value]
       structures.value = Object.values(data.planets[planetId.value].structures)
         .filter((s) => allStructureIdSet.has(s.id))

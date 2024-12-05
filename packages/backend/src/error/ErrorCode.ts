@@ -23,4 +23,7 @@ export class ErrorCode {
 
   static ROOM_NOT_EXIST = new ErrorCode(2001, '房间不存在')
   static MESSAGE_TOO_LONG = new ErrorCode(2002, '消息太长')
+
+  static PLANET_NOT_EXIST = new ErrorCode(2021, '星球不存在')
+  static PLANET_OCCUPIED = new ErrorCode(2022, '星球已被占领')
 }

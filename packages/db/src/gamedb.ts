@@ -1,7 +1,6 @@
 import { DB, DBNames } from './db'
 import { GameModel } from './model/game'
 import { Mutex } from './AsyncLock'
-import { initPlanet } from '@star-angry/core'
 
 const mutex = new Mutex()
 export class GameDB extends DB {
@@ -56,25 +55,8 @@ export class GameDB extends DB {
         money: 0,
         xnc: 0,
       },
-      planets: {
-        0: {
-          name: '星球1',
-          level: 1,
-          speed: 0,
-          position: {
-            x: 0,
-            y: 0,
-          },
-          targetPosition: {
-            x: 0,
-            y: 0,
-          },
-          resources: {},
-          structures: {},
-        },
-      },
+      planets: {},
     }
-    initPlanet(data.userDataMap[userId].planets[0])
   }
 
   initData() {
@@ -83,6 +65,9 @@ export class GameDB extends DB {
       user: [],
       messages: {},
       userDataMap: {},
+      config: {
+        seed: 0.63,
+      },
     } as GameModel
   }
 
