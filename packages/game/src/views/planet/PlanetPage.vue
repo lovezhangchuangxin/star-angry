@@ -39,9 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus'
-import { io, Socket } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 import {
   AllStructureData,
   PlanetData,
@@ -55,8 +55,9 @@ import {
 import { message as toast } from '@/utils/message'
 import NumberFormat from '@/components/number/NumberFormat.vue'
 import ShowPanel from './ShowPanel.vue'
+import { inject } from 'vue'
 
-const socket = ref<Socket | null>(null)
+const socket = inject<Ref<Socket>>('socket')
 const userData = ref<UserData>()
 const planetId = ref('')
 const planetData = ref<PlanetData>()
@@ -84,17 +85,6 @@ const allResources = computed(() => {
 })
 
 onMounted(() => {
-  socket.value = io('', {
-    query: {
-      token: localStorage.getItem('token'),
-    },
-    path: '/ws',
-  })
-
-  socket.value.on('connect', () => {
-    console.log('connect')
-  })
-
   timerId.value = setInterval(() => {
     getMyData()
   }, 1000) as unknown as number
@@ -102,12 +92,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearInterval(timerId.value!)
-  socket.value?.disconnect()
 })
 
 // 获取我的游戏数据
 const getMyData = () => {
-  socket.value?.timeout(5000).emit('getMyData', (err: any, response: any) => {
+  socket?.value?.timeout(5000).emit('getMyData', (err: any, response: any) => {
     if (err) {
       toast.error('获取游戏数据失败')
     } else if (response.code === 0) {
@@ -143,7 +132,7 @@ const addOperation = (
     return
   }
 
-  socket.value
+  socket?.value
     ?.timeout(5000)
     .emit('addOperation', params, (err: any, response: any) => {
       if (err) {

@@ -92,11 +92,13 @@ const getMapObject = (
   if (!socket?.value) {
     return
   }
+
   socket.value
     .timeout(5000)
     .emit('getObjectsFromChunks', chunkIds, (err: any, response: any) => {
       if (err) {
-        toast.error('获取游戏数据失败')
+        toast.error('获取地图数据失败')
+        console.log(err)
       } else if (response.code === 0) {
         mapObjectData.value = response.data
         callback(mapObjectData.value!)

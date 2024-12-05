@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { io, Socket } from 'socket.io-client'
+import { inject, onMounted, Ref, ref } from 'vue'
+import { Socket } from 'socket.io-client'
 import PersonList from './PersonList.vue'
 import ChatWindow from './ChatWindow.vue'
 import { message as toast } from '@/utils/message'
@@ -34,27 +34,16 @@ const personList = ref<{ id: string; username: string }[]>([
 const toId = ref('')
 const toName = ref('')
 const messages = ref<MessageInfo[]>([])
-const socket = ref<Socket | null>(null)
+const socket = inject<Ref<Socket>>('socket')
 
 onMounted(() => {
-  socket.value = io('', {
-    query: {
-      token: localStorage.getItem('token'),
-    },
-    path: '/ws',
-  })
-
-  socket.value.on('connect', () => {
-    console.log('connect')
-  })
-
   // 从本地存储中获取已聊天用户列表
   try {
     const chatPersonList = JSON.parse(
       localStorage.getItem('chatPersonList') || '[]',
     ) as string[]
     if (chatPersonList.length) {
-      socket.value
+      socket?.value
         .timeout(5000)
         .emit(
           'queryUsers',
@@ -76,7 +65,7 @@ onMounted(() => {
     localStorage.setItem('chatPersonList', '[]')
   }
 
-  socket.value.on('receiveChat', (fromId: string, message: MessageInfo) => {
+  socket?.value.on('receiveChat', (fromId: string, message: MessageInfo) => {
     if (fromId === userStore.id) {
       return
     }
@@ -84,16 +73,12 @@ onMounted(() => {
   })
 })
 
-onUnmounted(() => {
-  socket.value?.disconnect()
-})
-
 const handleSelectPerson = (id: string, name: string) => {
   getChat(id, name)
 }
 
 const getChat = (id: string, name: string) => {
-  socket.value
+  socket?.value
     ?.timeout(5000)
     .emit('getChat', id, (err: any, response: ResponseData<MessageInfo[]>) => {
       if (err) {
@@ -114,7 +99,7 @@ const handleSendMessage = (message: string, ok: () => void) => {
     return
   }
 
-  socket.value
+  socket?.value
     ?.timeout(5000)
     .emit(
       'sendChat',
