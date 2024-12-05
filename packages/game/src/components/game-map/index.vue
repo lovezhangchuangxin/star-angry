@@ -64,7 +64,10 @@ onMounted(() => {
       y: -(mousePointTo.y - pointerPos.y / newScale) * newScale,
     }
     stage.position(newPos)
-    render(stage, layer)
+    // 缩小才重新渲染，放大不用
+    if (e.deltaY < 0) {
+      render(stage, layer)
+    }
   })
 })
 
@@ -77,7 +80,12 @@ const render = throttle(
     const width = stage.width() / scale
     const height = stage.height() / scale
 
-    const chunkIds = universeMap.getChunks(x, y, x + width, y + height)
+    const chunkIds = universeMap.getChunks(
+      Math.floor(x - width / 3),
+      Math.floor(y - width / 3),
+      Math.floor(x + (width * 4) / 3),
+      Math.floor(y + (height * 4) / 3),
+    )
     chunkIds.forEach((chunkId) => {
       // 先判断是否已经存在
       const chunkGroup = layer.find(`#${chunkId}`)[0]
