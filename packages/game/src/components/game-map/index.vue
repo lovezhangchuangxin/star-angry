@@ -8,7 +8,7 @@ import { inject, onMounted, Ref, ref } from 'vue'
 import { Socket } from 'socket.io-client'
 import { message as toast } from '@/utils/message'
 import { PlanetData, UniverseMap } from '@star-angry/core'
-import { throttle } from '@star-angry/shared'
+import { debounce } from '@star-angry/shared'
 
 interface MapObjectData {
   seed: number
@@ -43,7 +43,7 @@ onMounted(() => {
   stage.add(layer)
 
   render(stage, layer)
-  stage.on('dragend', () => {
+  stage.on('dragmove', () => {
     render(stage, layer)
   })
 
@@ -67,7 +67,7 @@ onMounted(() => {
     }
 
     let newScale = e.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy
-    newScale = Math.min(10, Math.max(1, newScale))
+    newScale = Math.min(10, Math.max(2, newScale))
     stage.scale({ x: newScale, y: newScale })
 
     const newPos = {
@@ -111,85 +111,80 @@ const getMapObject = (
 /**
  * 渲染可视区的物体
  */
-const render = throttle(
-  (stage: Konva.Stage, layer: Konva.Layer) => {
-    // 先获取可视区域的坐标范围
-    const scale = stage.scaleX()
-    const x = -stage.x() / scale
-    const y = -stage.y() / scale
-    const width = stage.width() / scale
-    const height = stage.height() / scale
+const render = debounce((stage: Konva.Stage, layer: Konva.Layer) => {
+  // 先获取可视区域的坐标范围
+  const scale = stage.scaleX()
+  const x = -stage.x() / scale
+  const y = -stage.y() / scale
+  const width = stage.width() / scale
+  const height = stage.height() / scale
+  // 多取一些
+  const chunkIds = blankMap.getChunks(
+    Math.floor(x - width / 3),
+    Math.floor(y - width / 3),
+    Math.floor(x + (width * 4) / 3),
+    Math.floor(y + (height * 4) / 3),
+  )
 
-    const chunkIds = blankMap.getChunks(
-      Math.floor(x - width / 3),
-      Math.floor(y - width / 3),
-      Math.floor(x + (width * 4) / 3),
-      Math.floor(y + (height * 4) / 3),
-    )
+  getMapObject(chunkIds, (mapObjectData) => {
+    const { seed, chunkObjects, occupiedPlanets } = mapObjectData
+    const universeMap = new UniverseMap(seed)
+    chunkIds.forEach((chunkId) => {
+      // 先判断是否已经存在
+      const chunkGroup = layer.find(`#${chunkId}`)[0]
+      if (chunkGroup) {
+        return
+      }
 
-    getMapObject(chunkIds, (mapObjectData) => {
-      const { seed, chunkObjects, occupiedPlanets } = mapObjectData
-      const universeMap = new UniverseMap(seed)
+      const group = new Konva.Group({
+        id: chunkId.toString(),
+      })
 
-      chunkIds.forEach((chunkId) => {
-        // 先判断是否已经存在
-        const chunkGroup = layer.find(`#${chunkId}`)[0]
-        if (chunkGroup) {
+      const planets = universeMap.getPlanets(chunkId)
+      const occupiedPlanetSets = new Set(occupiedPlanets[chunkId])
+      planets.forEach((planet) => {
+        const planetX = planet[0]
+        const planetY = planet[1]
+        const planetId = universeMap.getBlockId(planetX, planetY)
+
+        if (occupiedPlanetSets?.has(planetId)) {
           return
         }
 
-        const group = new Konva.Group({
-          id: chunkId.toString(),
-        })
-
-        const planets = universeMap.getPlanets(chunkId)
-        const occupiedPlanetSets = new Set(occupiedPlanets[chunkId])
-        planets.forEach((planet) => {
-          const planetX = planet[0]
-          const planetY = planet[1]
-          const planetId = universeMap.getBlockId(planetX, planetY)
-
-          if (occupiedPlanetSets?.has(planetId)) {
-            return
-          }
-
-          const [circle, text] = getPlanetObject(
-            layer,
-            planetId,
-            planetX,
-            planetY,
-          )
-          group.add(circle, text)
-        })
-
-        chunkObjects[chunkId]?.forEach((data) => {
-          const { planet, userId, userName } = data
-          const [circle, text] = getPlanetObject(
-            layer,
-            +planet.id,
-            planet.position[0],
-            planet.position[1],
-            userName,
-          )
-          circle.fill(userId ? '#f4d2d2' : '#e1d2f4')
-          group.add(circle, text)
-        })
-
-        layer.add(group)
+        const [circle, text] = getPlanetObject(
+          layer,
+          planetId,
+          planetX,
+          planetY,
+        )
+        group.add(circle, text)
       })
-    })
 
-    // 移除不在可视区域的chunk
-    const chunkIdsSet = new Set(chunkIds.map((id) => id.toString()))
-    layer.children.forEach((child) => {
-      if (!chunkIdsSet.has(child.id())) {
-        child.destroy()
-      }
+      chunkObjects[chunkId]?.forEach((data) => {
+        const { planet, userId, userName } = data
+        const [circle, text] = getPlanetObject(
+          layer,
+          +planet.id,
+          planet.position[0],
+          planet.position[1],
+          userName,
+        )
+        circle.fill(userId ? '#f4d2d2' : '#e1d2f4')
+        group.add(circle, text)
+      })
+
+      layer.add(group)
     })
-  },
-  200,
-  true,
-)
+  })
+
+  // 移除不在可视区域的chunk
+  const chunkIdsSet = new Set(chunkIds.map((id) => id.toString()))
+  layer.children.forEach((child) => {
+    if (!chunkIdsSet.has(child.id())) {
+      child.destroy()
+    }
+  })
+}, 100)
 
 function getPlanetObject(
   layer: Konva.Layer,
