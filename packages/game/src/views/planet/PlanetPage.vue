@@ -99,15 +99,16 @@ onUnmounted(() => {
 const getMyData = () => {
   socket?.value?.timeout(5000).emit('getMyData', (err: any, response: any) => {
     if (err) {
-      toast.error('获取游戏数据失败')
+      toast.error('获取我的游戏数据失败')
+      console.log(err)
     } else if (response.code === 0) {
       const data = response.data as UserData
       userData.value = data
       // 暂时只考虑一个星球
       planetId.value = Object.keys(data.planets)[0]
       if (!planetId.value) {
-        toast.error('请先挑选星球')
-        socket.value?.disconnect()
+        toast.warn('请先在星怒页面挑选星球')
+        clearInterval(timerId.value!)
         return
       }
       planetData.value = data.planets[planetId.value]

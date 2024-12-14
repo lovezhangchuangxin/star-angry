@@ -306,6 +306,9 @@ watchEffect(() => {
   }
   // 暂时只考虑一个星球
   planetId.value = Object.keys(userData.value.planets)[0]
+  if (!planetId.value) {
+    return
+  }
   planetData.value = userData.value.planets[planetId.value]
   structures.value = Object.values(
     userData.value.planets[planetId.value].structures,

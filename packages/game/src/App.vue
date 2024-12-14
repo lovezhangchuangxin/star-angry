@@ -50,8 +50,6 @@ onMounted(() => {
       },
       path: '/ws',
     })
-
-    provide('socket', socket)
   })
 
   // 每隔一定时间刷新 token

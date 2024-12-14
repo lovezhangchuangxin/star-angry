@@ -154,7 +154,6 @@ import {
   validateVerification,
 } from '@star-angry/shared'
 import { useUserStore } from '@/store'
-import { useRouter } from 'vue-router'
 
 const dialogVisible = ref(false)
 const myEmail = ref('')
@@ -213,7 +212,6 @@ const registerRules = reactive<FormRules<typeof registerForm>>({
 })
 
 const userStore = useUserStore()
-const router = useRouter()
 
 const onSubmit = (formEle?: FormInstance) => {
   if (!formEle) return
@@ -232,7 +230,7 @@ const onSubmit = (formEle?: FormInstance) => {
           const { token, user } = res.data
           localStorage.setItem('token', token)
           userStore.setUserInfo(user)
-          router.push('/')
+          location.href = '/'
         } else {
           message.error(res.msg)
           return
